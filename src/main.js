@@ -11,7 +11,7 @@ fastclick.attach(document.body)
 Vue.config.productionTip = false
 
 Vue.use(lazyload, {
-  lading: require('common/image/default.png') // 懒加载时使用的图片,页面用v-lazy指令
+  loading: require('common/image/default.png') // 懒加载时使用的图片,页面用v-lazy指令
 })
 
 /* eslint-disable no-new */
