@@ -97,6 +97,9 @@ export default {
         this.slider.next()
       }, this.interval)
     }
+  },
+  destroyed() {
+    clearTimeout(this.timer) // 组建被销毁时清理计时器
   }
 }
 </script>

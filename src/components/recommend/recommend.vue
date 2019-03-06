@@ -10,19 +10,34 @@
             </div>
           </slider>
         </div>
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li v-for="item of disLists" class="item" :key="item.id">
+              <div class="icon">
+                <img width="60" height="60" :src="item.picUrl"/>
+              </div>
+              <div class="text">
+                <h2 class="name">{{item.topTitle}}</h2>
+                <p class="desc">{{item.songList[0].songname}}--{{item.songList[0].singername}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
 </template>
 
 <script>
-import {getRecommend} from 'api/recommend'
+import {getRecommend, getDisList} from 'api/recommend'
 import {ERR_OK} from 'api/config'
 import Slider from 'base/slider/slider'
 
 export default {
   data() {
     return {
-      recommends: []
+      recommends: [],
+      disLists: []
     }
   },
   components: {
@@ -30,14 +45,24 @@ export default {
   },
   created() {
     this._getRecommend()
+    this._getDisList()
   },
   methods: {
     _getRecommend() {
-      getRecommend().then(res => {
-        const data = res.data
+      getRecommend().then(data => {
         if (data.code === ERR_OK) {
           console.log('recommend data:', data.data.slider)
           this.recommends = data.data.slider
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    _getDisList() {
+      getDisList().then(data => {
+        if (data.code === ERR_OK) {
+          console.log('disList data:', data.data.topList)
+          this.disLists = data.data.topList
         }
       }).catch(err => {
         console.log(err)
