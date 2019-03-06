@@ -14,13 +14,13 @@
           <div class="recommend-list">
             <h1 class="list-title">热门歌单推荐</h1>
             <ul>
-              <li v-for="item of disLists" class="item" :key="item.id">
+              <li v-for="item of disLists" class="item" :key="item.content_id">
                 <div class="icon">
-                  <img width="60" height="60" v-lazy="item.picUrl"/>
+                  <img width="60" height="60" v-lazy="item.cover"/>
                 </div>
                 <div class="text">
-                  <h2 class="name">{{item.topTitle}}</h2>
-                  <p class="desc">{{item.songList[0].songname}}--{{item.songList[0].singername}}</p>
+                  <h2 class="desc">{{item.title}}</h2>
+                  <p class="desc">—— {{item.username}}</p>
                 </div>
               </li>
             </ul>
@@ -69,8 +69,9 @@ export default {
     _getDisList() {
       getDisList().then(data => {
         if (data.code === ERR_OK) {
-          console.log('disList data:', data.data.topList)
-          this.disLists = data.data.topList
+          const re = data.recomPlaylist.data.v_hot
+          console.log('disList data:', re)
+          this.disLists = re
         }
       }).catch(err => {
         console.log(err)

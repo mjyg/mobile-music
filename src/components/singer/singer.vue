@@ -3,7 +3,80 @@
 </template>
 
 <script>
+import {getSingerList} from 'api/singer'
+import {ERR_OK} from 'api/config'
+import pinyin from 'pinyin' // 汉字转拼音插件
+import Singer from 'common/js/singer'
+
+const HOT = '热门'
+const HOT_NUM = 10 // 前10为热门歌手
+
 export default {
+  data() {
+    return {
+      singerList: []
+    }
+  },
+  created() {
+    this._getSingerList()
+  },
+  methods: {
+    _getSingerList() {
+      getSingerList().then((res) => {
+        if (res.code === ERR_OK) {
+          const re = res.singerList.data.singerlist
+          console.log('singer list:', re)
+          this._normalizeSinger(re)
+          this.singerList = this._normalizeSinger(re)
+          console.log('normalize singer list:', this.singerList)
+        }
+      })
+    },
+    _normalizeSinger(list) { // 处理歌手数据
+      let map = {
+        [HOT]: {
+          title: HOT,
+          item: []
+        }
+      }
+      for (let [index, data] of list.entries()) {
+        if (index < HOT_NUM) {
+          map[HOT].item.push(new Singer(data.singer_id, data.singer_name, data.singer_pic)) // 抽象出Singer类
+        }
+      }
+      for (let data of list) {
+        const name = data.singer_name
+        const cap = this._getFirstCapLetter(name)
+        if (!map[cap]) {
+          map[cap] = {
+            title: cap,
+            item: [new Singer(data.singer_id, name, data.singer_pic)]
+          }
+        } else {
+          map[cap].item.push(new Singer(data.singer_id, name, data.singer_pic))
+        }
+      }
+      // 处理map为有序列表
+      let hot = []
+      let letter = []
+      for (const key of Object.keys(map)) {
+        if (/^[a-zA-z]$/.test(key)) {
+          letter.push(map[key])
+        } else if (key === HOT) {
+          hot.push(map[key])
+        }
+      }
+      letter.sort((a, b) => {
+        return a.title.charCodeAt(0) - b.title.charCodeAt(0)
+      })
+      return hot.concat(letter)
+    },
+    _getFirstCapLetter(name) {
+      return pinyin(name, {
+        style: pinyin.STYLE_FIRST_LETTER
+      })[0][0][0].toUpperCase()
+    }
+  }
 }
 </script>
 
