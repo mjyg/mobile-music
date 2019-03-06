@@ -1,5 +1,7 @@
 <template>
-    <div>歌手</div>
+  <div class="singer">
+    <list-view :data="singerList"></list-view>
+  </div>
 </template>
 
 <script>
@@ -7,6 +9,7 @@ import {getSingerList} from 'api/singer'
 import {ERR_OK} from 'api/config'
 import pinyin from 'pinyin' // 汉字转拼音插件
 import Singer from 'common/js/singer'
+import ListView from 'base/listView/listView'
 
 const HOT = '热门'
 const HOT_NUM = 10 // 前10为热门歌手
@@ -16,6 +19,9 @@ export default {
     return {
       singerList: []
     }
+  },
+  components: {
+    ListView
   },
   created() {
     this._getSingerList()
@@ -73,13 +79,17 @@ export default {
     },
     _getFirstCapLetter(name) {
       return pinyin(name, {
-        style: pinyin.STYLE_FIRST_LETTER
-      })[0][0][0].toUpperCase()
+        style: pinyin.STYLE_FIRST_LETTER // 返回首字母
+      })[0][0].toUpperCase()
     }
   }
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="stylus" rel="stylesheet/stylus">
+  .singer
+    position: fixed
+    top: 88px
+    bottom: 0
+    width: 100%
 </style>

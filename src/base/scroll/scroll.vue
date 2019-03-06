@@ -11,6 +11,10 @@ export default {
   props: {
     data: {
       type: Array
+    },
+    click: {
+      type: Boolean,
+      default: true
     }
   },
   mounted() {
@@ -28,6 +32,7 @@ export default {
   methods: {
     _initScroll() {
       this.scroll = new BetterScroll(this.$refs.wrapper, {
+        click: this.click
       })
     },
     refresh() {
