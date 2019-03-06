@@ -1,30 +1,32 @@
 <template>
     <div class="recommend">
-      <div class="recommend-content">
-        <div class="slider-wrapper" v-if="recommends.length">
-          <slider>
-            <div v-for="recommend of recommends" :key="recommend.id">
-              <a :href="recommend.linkUrl">
-                <img :src="recommend.picUrl"/>
-              </a>
-            </div>
-          </slider>
-        </div>
-        <div class="recommend-list">
-          <h1 class="list-title">热门歌单推荐</h1>
-          <ul>
-            <li v-for="item of disLists" class="item" :key="item.id">
-              <div class="icon">
-                <img width="60" height="60" :src="item.picUrl"/>
+      <scroll class="recommend-content" :data="disLists" ref="scroll">
+        <div>
+          <div class="slider-wrapper" v-if="recommends.length">
+            <slider>
+              <div v-for="recommend of recommends" :key="recommend.id">
+                <a :href="recommend.linkUrl">
+                  <img @load="onLoad" :src="recommend.picUrl"/>
+                </a>
               </div>
-              <div class="text">
-                <h2 class="name">{{item.topTitle}}</h2>
-                <p class="desc">{{item.songList[0].songname}}--{{item.songList[0].singername}}</p>
-              </div>
-            </li>
-          </ul>
+            </slider>
+          </div>
+          <div class="recommend-list">
+            <h1 class="list-title">热门歌单推荐</h1>
+            <ul>
+              <li v-for="item of disLists" class="item" :key="item.id">
+                <div class="icon">
+                  <img width="60" height="60" :src="item.picUrl"/>
+                </div>
+                <div class="text">
+                  <h2 class="name">{{item.topTitle}}</h2>
+                  <p class="desc">{{item.songList[0].songname}}--{{item.songList[0].singername}}</p>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </scroll>
     </div>
 </template>
 
@@ -32,6 +34,7 @@
 import {getRecommend, getDisList} from 'api/recommend'
 import {ERR_OK} from 'api/config'
 import Slider from 'base/slider/slider'
+import Scroll from 'base/scroll/scroll'
 
 export default {
   data() {
@@ -41,7 +44,8 @@ export default {
     }
   },
   components: {
-    Slider
+    Slider,
+    Scroll
   },
   created() {
     this._getRecommend()
@@ -67,6 +71,12 @@ export default {
       }).catch(err => {
         console.log(err)
       })
+    },
+    onLoad() {
+      if (!this.checkload) {
+        this.$refs.scroll.refresh() // 第一张轮播图片加载时，调用scroll的刷新方法
+        this.checkload = true
+      }
     }
   }
 }
