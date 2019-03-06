@@ -16,7 +16,7 @@
             <ul>
               <li v-for="item of disLists" class="item" :key="item.id">
                 <div class="icon">
-                  <img width="60" height="60" :src="item.picUrl"/>
+                  <img width="60" height="60" v-lazy="item.picUrl"/>
                 </div>
                 <div class="text">
                   <h2 class="name">{{item.topTitle}}</h2>
