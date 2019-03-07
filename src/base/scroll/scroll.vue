@@ -15,6 +15,14 @@ export default {
     click: {
       type: Boolean,
       default: true
+    },
+    probeType: {
+      type: Number,
+      default: 1
+    },
+    listenScroll: {
+      type: Boolean,
+      default: false
     }
   },
   mounted() {
@@ -32,8 +40,15 @@ export default {
   methods: {
     _initScroll() {
       this.scroll = new BetterScroll(this.$refs.wrapper, {
-        click: this.click
+        click: this.click,
+        probeType: this.probeType
       })
+      if (this.listenScroll) {
+        const self = this
+        this.scroll.on('scroll', (pos) => {
+          self.$emit('scroll', pos) // 如果需要监听scroll，则往父组件派发一个事件，传递位置参数
+        })
+      }
     },
     refresh() {
       this.scroll && this.scroll.refresh()

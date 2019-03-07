@@ -1,5 +1,6 @@
 <template>
-  <scroll class="listview" :data="data" ref="listView">
+  <scroll class="listview" :data="data" ref="listView" :listenScroll="true"
+          :probeType="3" @scroll="scroll">
     <ul>
       <li v-for="group of data" class="list-group" :key="group.title" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
@@ -14,7 +15,9 @@
     <div class="list-shortcut" @touchstart="onShortcutTouchStart"
          @touchmove.stop.prevent="onShortcutTouchMove">
       <ul>
-        <li v-for="(item, index) of shortcutList" :key="index" class="item" :data-index="index">
+        <li v-for="(item, index) of shortcutList" :key="index"
+            :class="['item', {current: currentIndex === index}]"
+            :data-index="index">
           {{item}}
         </li>
       </ul>
@@ -31,6 +34,7 @@ const ANCHOR_HEIGHT = 18 // 滚动条上每个元素的高度
 export default {
   data() {
     return {
+      currentIndex: 0
     }
   },
   props: {
@@ -48,8 +52,16 @@ export default {
       })
     }
   },
+  watch: {
+    data(newVal) {
+      setTimeout(() => {
+        this._getGroupListeight()
+      }, 20) // 当数据变化的时候计算group高度，数据变化到dom渲染有延迟
+    }
+  },
   created() {
     this.touch = {} // touch不需要监听变化，不需要和dom绑定，所以不需要写在data里
+    this.groupHeight = []
   },
   methods: {
     onShortcutTouchStart(e) { // 监听触摸开始事件
@@ -58,7 +70,6 @@ export default {
       console.log(e)
       let firstTouch = e.touches[0] // Touch对象表示在触控设备上的触摸
       this.touch.y1 = firstTouch.pageY // 触摸开始时的的Y坐标
-      console.log(anchorIndex)
       this.touch.index = anchorIndex
     },
     onShortcutTouchMove(e) { // 监听拖动事件
@@ -67,8 +78,39 @@ export default {
       let groupNum = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0 // 获取拖动的元素个数（|0表示向下取整）
       this._scrollTo(parseInt(this.touch.index) + groupNum) // 滚动条滚动到相应group(字符串和数字相加会出错)
     },
+    scroll(pos) {
+      let posY = pos.y
+      console.log(posY)
+      // 歌手列表滚到中间
+      const len = this.groupHeight.length
+      if (posY > 0) { // 歌手列表滚到顶部
+        this.currentIndex = 0
+      } else if (-posY < this.groupHeight[len - 2]) { // 歌手列表滚到中间
+        for (let i = 0; i < len - 1; i++) {
+          if (-posY >= this.groupHeight[i] && -posY < this.groupHeight[i + 1]) {
+            this.currentIndex = i
+            break
+          }
+        }
+      } else { // 歌手列表滚到最后一个group
+        this.currentIndex = len - 2
+      }
+      console.log(this.currentIndex)
+    },
     _scrollTo(index) {
       this.$refs.listView.scrollToElement(this.$refs.listGroup[index], 0)
+    },
+    _getGroupListeight() {
+      const list = this.$refs.listGroup
+      console.log(list)
+      let height = 0
+      this.groupHeight.push(height)
+      for (const item of list) {
+        console.log(height)
+        height += item.clientHeight
+        this.groupHeight.push(height)
+      }
+      console.log(this.groupHeight.length)
     }
   }
 }
