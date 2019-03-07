@@ -11,6 +11,11 @@
         </ul>
       </li>
     </ul>
+    <div class="list-shortcut" @touchstart="onStarch">
+      <ul>
+        <li v-for="(item, index) of shortcutList" :key="index" class="item">{{item}}</li>
+      </ul>
+    </div>
   </scroll>
 </template>
 
@@ -18,6 +23,10 @@
 import Scroll from 'base/scroll/scroll'
 
 export default {
+  data() {
+    return {
+    }
+  },
   props: {
     data: {
       type: Array
@@ -25,6 +34,13 @@ export default {
   },
   components: {
     Scroll
+  },
+  computed: {
+    shortcutList() {
+       return this.data.map((group) => {
+         return group.title.substr(0, 1) // 返回该元素构成的新数组
+      })
+    }
   }
 }
 </script>
