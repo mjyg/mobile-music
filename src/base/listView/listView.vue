@@ -22,6 +22,9 @@
         </li>
       </ul>
     </div>
+    <div class="list-fixed" v-show="fixedTitle" ref="fixed">
+      <h1 class="fixed-title">{{fixedTitle}}</h1>
+    </div>
   </scroll>
 </template>
 
@@ -34,7 +37,8 @@ const ANCHOR_HEIGHT = 18 // 滚动条上每个元素的高度
 export default {
   data() {
     return {
-      currentIndex: 0
+      currentIndex: 0,
+      posY: -1
     }
   },
   props: {
@@ -50,6 +54,12 @@ export default {
       return this.data.map((group) => {
         return group.title.substr(0, 1) // 返回该元素构成的新数组
       })
+    },
+    fixedTitle() {
+      if (this.posY > 0) {
+        return ''
+      }
+      return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
     }
   },
   watch: {
@@ -67,7 +77,6 @@ export default {
     onShortcutTouchStart(e) { // 监听触摸开始事件
       let anchorIndex = getData(e.target, 'index') // 获取点击的group序号
       this._scrollTo(anchorIndex) // 滚动条滚动到相应group
-      console.log(e)
       let firstTouch = e.touches[0] // Touch对象表示在触控设备上的触摸
       this.touch.y1 = firstTouch.pageY // 触摸开始时的的Y坐标
       this.touch.index = anchorIndex
@@ -80,7 +89,7 @@ export default {
     },
     scroll(pos) {
       let posY = pos.y
-      console.log(posY)
+      this.posY = posY
       // 歌手列表滚到中间
       const len = this.groupHeight.length
       if (posY > 0) { // 歌手列表滚到顶部
@@ -89,28 +98,23 @@ export default {
         for (let i = 0; i < len - 1; i++) {
           if (-posY >= this.groupHeight[i] && -posY < this.groupHeight[i + 1]) {
             this.currentIndex = i
-            break
           }
         }
       } else { // 歌手列表滚到最后一个group
         this.currentIndex = len - 2
       }
-      console.log(this.currentIndex)
     },
     _scrollTo(index) {
       this.$refs.listView.scrollToElement(this.$refs.listGroup[index], 0)
     },
     _getGroupListeight() {
       const list = this.$refs.listGroup
-      console.log(list)
       let height = 0
       this.groupHeight.push(height)
       for (const item of list) {
-        console.log(height)
         height += item.clientHeight
         this.groupHeight.push(height)
       }
-      console.log(this.groupHeight.length)
     }
   }
 }
