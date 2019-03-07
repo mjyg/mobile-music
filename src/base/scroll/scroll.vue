@@ -37,6 +37,12 @@ export default {
     },
     refresh() {
       this.scroll && this.scroll.refresh()
+    },
+    scrollTo() {
+      return this.scroll.scrollTo.apply(this.scroll, arguments)
+    },
+    scrollToElement() {
+      return this.scroll.scrollToElement.apply(this.scroll, arguments)
     }
   }
 }
