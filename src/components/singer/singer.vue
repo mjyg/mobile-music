@@ -59,7 +59,7 @@ export default {
       }
       for (let [index, data] of list.entries()) {
         if (index < HOT_NUM) {
-          map[HOT].item.push(new Singer(data.singer_id, data.singer_name, data.singer_pic)) // 抽象出Singer类
+          map[HOT].item.push(new Singer(data.singer_mid, data.singer_name, data.singer_pic)) // 抽象出Singer类
         }
       }
       for (let data of list) {
@@ -68,10 +68,10 @@ export default {
         if (!map[cap]) {
           map[cap] = {
             title: cap,
-            item: [new Singer(data.singer_id, name, data.singer_pic)]
+            item: [new Singer(data.singer_mid, name, data.singer_pic)]
           }
         } else {
-          map[cap].item.push(new Singer(data.singer_id, name, data.singer_pic))
+          map[cap].item.push(new Singer(data.singer_mid, name, data.singer_pic))
         }
       }
       // 处理map为有序列表

@@ -3,7 +3,7 @@ import {commonParams} from './config'
 import axios from 'axios'
 
 export function getRecommend() {
-  const url = '/api/getRecommend'
+  const url = '/getRecommend'
   const data = Object.assign({}, commonParams, {
     platform: 'h5',
     uin: 0,

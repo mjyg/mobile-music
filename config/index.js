@@ -10,7 +10,18 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      '/getSingerDetail': {
+        target: 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg?',
+        changeOrigin: true, // 将主机头的起始位置更改为目标URL
+        secure: false // 验证SSL Certs
+      },
+      '/getRecommend': {
+        target: 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg?',
+        changeOrigin: true,
+        secure: false
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

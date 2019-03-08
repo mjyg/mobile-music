@@ -4,10 +4,22 @@
 
 <script>
 import {mapGetters} from 'vuex'
+import {getSingerDetail} from 'api/singer'
+// import {ERR_OK} from 'api/config'
 
 export default {
   computed: {
-    ...mapGetters(['singer']) // 相当于this.$store.state.singer 
+    ...mapGetters(['singer']) // 相当于this.$store.state.singer
+  },
+  created() {
+    this._getDetail()
+  },
+  methods: {
+    _getDetail() {
+      getSingerDetail(this.singer.id).then((res) => {
+        console.log(res)
+      })
+    }
   }
 }
 </script>
