@@ -5,7 +5,8 @@
       <li v-for="group of data" class="list-group" :key="group.title" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
-          <li v-for="item of group.item" class="list-group-item" :key="item.id">
+          <li v-for="item of group.item" class="list-group-item" :key="item.id"
+              @click="clickItem(item)">
             <img v-lazy="item.pic" class="avatar"/>
             <span class="name">{{item.name}}</span>
           </li>
@@ -22,7 +23,7 @@
         </li>
       </ul>
     </div>
-    <div class="list-fixed" v-show="fixedTitle" ref="fixed">
+    <div class="list-fixed" v-show="fixedTitle">
       <h1 class="fixed-title">{{fixedTitle}}</h1>
     </div>
   </scroll>
@@ -103,6 +104,9 @@ export default {
       } else { // 歌手列表滚到最后一个group
         this.currentIndex = len - 2
       }
+    },
+    clickItem(item) {
+      this.$emit('clickItem', item)
     },
     _scrollTo(index) {
       this.$refs.listView.scrollToElement(this.$refs.listGroup[index], 0)
