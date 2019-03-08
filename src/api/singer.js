@@ -30,9 +30,3 @@ export function getSingerDetail(singerId) {
     return Promise.resolve(res.data)
   })
 }
-
-export function getSongUrl(url) {
-  return axios.get(url, {}).then((res) => {
-    return Promise.resolve(res.data)
-  })
-}

@@ -1,5 +1,3 @@
-import {getSongUrl} from 'api/singer'
-
 class Song {
   constructor({id, mid, singer, name, album, duration, image, url}) {
     this.id = id
