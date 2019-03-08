@@ -5,9 +5,15 @@
 <script>
 import {mapGetters} from 'vuex'
 import {getSingerDetail} from 'api/singer'
-// import {ERR_OK} from 'api/config'
+import {ERR_OK} from 'api/config'
+import {createSong} from 'common/js/song'
 
 export default {
+  data() {
+    return {
+      songList: []
+    }
+  },
   computed: {
     ...mapGetters(['singer']) // 相当于this.$store.state.singer
   },
@@ -17,8 +23,17 @@ export default {
   methods: {
     _getDetail() {
       getSingerDetail(this.singer.id).then((res) => {
-        console.log(res)
+        if (res.code === ERR_OK) {
+          this._normalizeSong(res.data.list)
+          console.log('song list:', this.songList)
+        }
       })
+    },
+    _normalizeSong(list) {
+      for (const item of list) {
+        let {musicData} = item
+        this.songList.push(createSong(musicData))
+      }
     }
   }
 }
