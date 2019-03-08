@@ -11,6 +11,8 @@ import {ERR_OK} from 'api/config'
 import pinyin from 'pinyin' // 汉字转拼音插件
 import Singer from 'common/js/singer'
 import ListView from 'base/listView/listView'
+import {mapMutations} from 'vuex'
+import * as types from 'store/mutation-types'
 
 const HOT = '热门'
 const HOT_NUM = 10 // 前10为热门歌手
@@ -28,10 +30,14 @@ export default {
     this._getSingerList()
   },
   methods: {
+    ...mapMutations({ // mapMutations返回的是一个对象，使用扩展运算符可以把此对象混入到外部对象中
+      setSinger: types.SET_SINGER
+    }),
     clickItem(singer) {
       this.$router.push({
         path: `/singer/${singer.id}`
       })
+      this.setSinger(singer) // 相当于this.$store.commit(types.SET_SINGER, singer)
     },
     _getSingerList() {
       getSingerList().then((res) => {

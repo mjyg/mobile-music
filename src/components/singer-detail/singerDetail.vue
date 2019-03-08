@@ -1,9 +1,14 @@
 <template>
-    <div class="singer-detail">详情</div>
+    <div class="singer-detail"></div>
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
+
 export default {
+  computed: {
+    ...mapGetters(['singer']) // 相当于this.$store.state.singer 
+  }
 }
 </script>
 
