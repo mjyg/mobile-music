@@ -10,7 +10,7 @@ import {getSingerList} from 'api/singer'
 import {ERR_OK} from 'api/config'
 import pinyin from 'pinyin' // 汉字转拼音插件
 import Singer from 'common/js/singer'
-import ListView from 'base/listView/listView'
+import ListView from 'base/list-view/list-view'
 import {mapMutations} from 'vuex'
 import * as types from 'store/mutation-types'
 

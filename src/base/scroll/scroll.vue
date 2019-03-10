@@ -16,7 +16,7 @@ export default {
       type: Boolean,
       default: true
     },
-    probeType: {
+    probeType: { // 拖动多大速度监听事件
       type: Number,
       default: 1
     },
@@ -39,6 +39,9 @@ export default {
   },
   methods: {
     _initScroll() {
+      if (!this.$refs.wrapper) {
+        return
+      }
       this.scroll = new BetterScroll(this.$refs.wrapper, {
         click: this.click,
         probeType: this.probeType
@@ -54,10 +57,10 @@ export default {
       this.scroll && this.scroll.refresh()
     },
     scrollTo() {
-      return this.scroll.scrollTo.apply(this.scroll, arguments)
+      this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)
     },
     scrollToElement() {
-      return this.scroll.scrollToElement.apply(this.scroll, arguments)
+      this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
     }
   }
 }
