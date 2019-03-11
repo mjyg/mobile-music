@@ -1,10 +1,16 @@
 <template>
   <div class="music-list">
-    <div class="back" ref="iconBack">
+    <div class="back" ref="iconBack" @click="back">
       <i class="icon-back"></i>
     </div>
     <h1 class="title">{{title}}</h1>
     <div class="bg-image" :style="bgStyle" ref="bgImage">
+      <div class="play-wrapper" ref="playBtn" v-show="songs.length > 0">
+        <div class="play">
+          <i class="icon-play"></i>
+          <span class="text">随机播放全部</span>
+        </div>
+      </div>
       <div class="filter" ref="filter"></div>
     </div>
     <div class="bg-layer" ref="bgLayer"></div>
@@ -12,6 +18,9 @@
             :listenScroll="true" :probeType="3">
       <div class="song-list-wrapper">
         <song-list :songs="songs"></song-list>
+      </div>
+      <div class="loading-container" v-show="!songs.length">
+        <loading></loading>
       </div>
     </scroll>
   </div>
@@ -21,6 +30,7 @@
 import SongList from 'base/song-list/song-list'
 import Scroll from 'base/scroll/scroll'
 import {prefixStyle} from 'common/js/dom'
+import Loading from 'base/loading/loading'
 
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
@@ -31,6 +41,7 @@ export default {
     }
   },
   components: {
+    Loading,
     SongList,
     Scroll
   },
@@ -67,9 +78,11 @@ export default {
       let scale = 1
       let blur = 0
       if (posY < -this.maxheight) { // 往上滚动
-        this.setBgImageStyle(0, this.iconBackHeight, 10)
+        this._setBgImageStyle(0, this.iconBackHeight, 10)
+        this.$refs.playBtn.style.display = 'none'
       } else {
-        this.setBgImageStyle('70%', 0, 0)
+        this._setBgImageStyle('70%', 0, 0)
+        this.$refs.playBtn.style.display = ''
       }
       const percent = Math.abs(posY / this.bgImageHeight)
       if (posY > 0) { // 往下滚动
@@ -83,7 +96,10 @@ export default {
       this.$refs.bgImage.style[transform] = `scale(${scale})` // 往下滚动时图片放大
       this.$refs.filter.style[backdrop] = `blur(${blur}px)` // 往上滚动时，设置图片高斯模糊
     },
-    setBgImageStyle(paddingTop, height, zIndex) {
+    back() {
+      this.$router.back()
+    },
+    _setBgImageStyle(paddingTop, height, zIndex) {
       const bgImageStyle = this.$refs.bgImage.style
       bgImageStyle.paddingTop = paddingTop
       bgImageStyle.height = `${height}px`
