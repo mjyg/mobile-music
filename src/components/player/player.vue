@@ -1,18 +1,132 @@
 <template>
   <div class="player" v-show="playlist.length > 0">
-    <div class="normal-player" v-show="fullScreen">
-      播放器
-    </div>
-    <div class="mini-player" v-show="!fullScreen">"</div>
+    <transition name="normal" @enter="enter" @after-enter="afterEnter"
+                @leave="leave" @after-leave="afterLeave">
+      <div class="normal-player" v-show="fullScreen">
+        <div class="background">
+          <img width="100%" height="100%">
+        </div>
+        <div class="top" @click="back">
+          <div class="back">
+            <i class="icon-back"></i>
+          </div>
+          <h1 class="title">{{currentSong.name}}</h1>
+          <h2 class="subtitle">{{currentSong.singer}}</h2>
+        </div>
+        <div class="middle">
+          <div class="middle-l">
+            <div class="cd-wrapper" ref="cdWrapper">
+              <div class="cd">
+                <img class="image" :src="currentSong.image">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom">
+          <div class="operator">
+            <div class="icon i-left">
+              <i class="icon-sequence"></i>
+            </div>
+            <div class="icon i-left">
+              <i class="icon-prev"></i>
+            </div>
+            <div class="icon i-left">
+              <i class="icon-play"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+    <transition name="mini">
+      <div class="mini-player" v-show="!fullScreen" @click="open">
+        <div class="icon">
+          <img width="40" height="40" :src="currentSong.image">
+        </div>
+        <div class="text">
+          <h2 class="name">{{currentSong.name}}</h2>
+          <p class="desc">{{currentSong.singer}}</p>
+        </div>
+        <div class="control">
+          <i class="icon-mini"></i>
+        </div>
+        <div class="control">
+          <i class="icon-playlist"></i>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import {mapGetters, mapMutations} from 'vuex'
+import * as types from 'store/mutation-types'
+import animations from 'create-keyframe-animation'
+import {prefixStyle} from 'common/js/dom'
+
+const transform = prefixStyle('transform')
 
 export default {
   computed: {
-    ...mapGetters(['fullScreen', 'playlist'])
+    ...mapGetters(['fullScreen', 'playlist', 'currentSong'])
+  },
+  methods: {
+    ...mapMutations({
+      setFullScreen: types.SET_FULL_SCREEN
+    }),
+    back() {
+      this.setFullScreen(false)
+    },
+    open() {
+      this.setFullScreen(true)
+    },
+    enter(el, done) {
+      const {x, y, scale} = this._getPosAndScale()
+      const animation = {
+        0: {
+          transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
+        },
+        60: {
+          transform: `translate3d(0,0,0);scale(1.1)`
+        },
+        100: {
+          transform: `translate3d(0,0,0);scale(1)`
+        }
+      }
+      animations.registerAnimation({
+        name: 'move',
+        animation,
+        presets: {
+          duration: 400,
+          easing: 'Linear'
+        }
+      })
+      animations.runAnimation(this.$refs.cdWrapper, 'move', done)
+    },
+    afterEnter(el, done) {
+      animations.unregisterAnimation('move')
+      this.$refs.cdWrapper.style.animation = ''
+    },
+    leave(el, done) {
+      this.$refs.cdWrapper.style.transition = 'all 0.4s'
+      const {x, y, scale} = this._getPosAndScale()
+      this.$refs.cdWrapper.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`
+      this.$refs.cdWrapper.addEventListener('transitionend', done)
+    },
+    afterLeave(el, done) {
+      this.$refs.cdWrapper.style.transition = ''
+      this.$refs.cdWrapper.style[transform] = ''
+    },
+    _getPosAndScale() { // 获取图片变化位置和比例
+      const normalPaddingTop = 80
+      const normalWidth = window.innerWidth * 0.8
+      const miniLeft = 40
+      const miniBottom = 30
+      const miniWidth = 40
+      const scale = miniWidth / normalWidth
+      const x = -(window.innerWidth / 2 - miniLeft)
+      const y = window.innerHeight - normalPaddingTop - normalWidth / 2 - miniBottom
+      return {x, y, scale}
+    }
   }
 }
 </script>
