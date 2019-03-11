@@ -22,3 +22,32 @@ export function getData(el, name, val) {
   }
   return el.getAttribute(name)
 }
+
+let elementStyle = document.createElement('div').style
+console.log(elementStyle)
+
+// 添加浏览器前缀，定义autoprefix逻辑
+let prefix = (() => {
+  let transformNames = {
+    webkit: 'webkitTransform',
+    Moz: 'MozTransform',
+    O: 'OTransform',
+    ma: 'msTransform'
+  }
+  for (let key in transformNames) {
+    if (elementStyle[transformNames[key]] !== undefined) {
+      return key
+    }
+  }
+  return false
+})()
+
+export function prefixStyle(style) {
+  if (prefix === false) {
+    return
+  }
+  if (prefix === 'standard') {
+    return style
+  }
+  return prefix + style.substr(0, 1).toUpperCase() + style.substr(1)
+}

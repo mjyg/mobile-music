@@ -20,6 +20,9 @@
 <script>
 import SongList from 'base/song-list/song-list'
 import Scroll from 'base/scroll/scroll'
+import {prefixStyle} from 'common/js/dom'
+
+const prefixTransform = prefixStyle('transform')
 
 export default {
   data() {
@@ -60,8 +63,7 @@ export default {
     scroll(pos) {
       const posY = pos.y
       const height = Math.max(-this.maxheight, posY)
-      this.$refs.bgLayer.style.transform = `translate3d(0, ${height}px, 0)`
-      this.$refs.bgLayer.style['-webkit-transform'] = `translate3d(0, ${height}px, 0)`
+      this.$refs.bgLayer.style[prefixTransform] = `translate3d(0, ${height}px, 0)`
       if (posY < -this.maxheight) {
         this.setBgImageStyle(0, this.iconBackHeight, 10)
       } else {
