@@ -1,4 +1,4 @@
-// 把mutations里的方法定义为常量
+// 需要哪些修改数据的动作，把它定义为常量
 
 export const SET_SINGER = 'SET_SINGER'
 

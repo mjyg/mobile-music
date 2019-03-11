@@ -24,7 +24,6 @@ export function getData(el, name, val) {
 }
 
 let elementStyle = document.createElement('div').style
-console.log(elementStyle)
 
 // 添加浏览器前缀，封装auto-prefixer逻辑
 let prefix = (() => {
