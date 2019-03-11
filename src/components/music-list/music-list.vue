@@ -5,7 +5,7 @@
     </div>
     <h1 class="title">{{title}}</h1>
     <div class="bg-image" :style="bgStyle" ref="bgImage">
-      <div class="filter"></div>
+      <div class="filter" ref="filter"></div>
     </div>
     <div class="bg-layer" ref="bgLayer"></div>
     <scroll :data="songs" class="list" ref="songsScroll" @scroll="scroll"
@@ -22,7 +22,8 @@ import SongList from 'base/song-list/song-list'
 import Scroll from 'base/scroll/scroll'
 import {prefixStyle} from 'common/js/dom'
 
-const prefixTransform = prefixStyle('transform')
+const transform = prefixStyle('transform')
+const backdrop = prefixStyle('backdrop-filter')
 
 export default {
   data() {
@@ -54,21 +55,33 @@ export default {
   mounted() {
     // songsScroll属于Vue实例，需要用$el获取dom元素，原生的dom元素不需要
     this.iconBackHeight = this.$refs.iconBack.clientHeight
-    const bgImageHeight = this.$refs.bgImage.clientHeight
+    this.bgImageHeight = this.$refs.bgImage.clientHeight
     // 计算歌曲背景滚动条的最大高度（因为是固定的，只需要计算一次，所以写在mounted里）
-    this.maxheight = bgImageHeight - this.iconBackHeight
-    this.$refs.songsScroll.$el.style.top = `${bgImageHeight}px`
+    this.maxheight = this.bgImageHeight - this.iconBackHeight
+    this.$refs.songsScroll.$el.style.top = `${this.bgImageHeight}px`
   },
   methods: {
     scroll(pos) {
       const posY = pos.y
       const height = Math.max(-this.maxheight, posY)
-      this.$refs.bgLayer.style[prefixTransform] = `translate3d(0, ${height}px, 0)`
-      if (posY < -this.maxheight) {
+      let scale = 1
+      let blur = 0
+      if (posY < -this.maxheight) { // 往上滚动
         this.setBgImageStyle(0, this.iconBackHeight, 10)
       } else {
         this.setBgImageStyle('70%', 0, 0)
       }
+      const percent = Math.abs(posY / this.bgImageHeight)
+      if (posY > 0) { // 往下滚动
+        scale = percent + 1 // 滚动比例
+        this.$refs.bgImage.style.zIndex = 10
+      } else { // 往上滚动
+        blur = Math.min(percent * 20, 20)
+      }
+      // 往上滚动时图片跟随滚动
+      this.$refs.bgLayer.style[transform] = `translate3d(0, ${height}px, 0)`
+      this.$refs.bgImage.style[transform] = `scale(${scale})` // 往下滚动时图片放大
+      this.$refs.filter.style[backdrop] = `blur(${blur}px)` // 往上滚动时，设置图片高斯模糊
     },
     setBgImageStyle(paddingTop, height, zIndex) {
       const bgImageStyle = this.$refs.bgImage.style
