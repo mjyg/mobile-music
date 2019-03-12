@@ -27,14 +27,14 @@
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left">
-              <i class="icon-prev"></i>
+            <div class="icon i-left" :class="disabledCls">
+              <i class="icon-prev"  @click="previous"></i>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disabledCls">
               <i @click="clickPlay" :class="playIcon"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-next"></i>
+            <div class="icon i-right" :class="disabledCls">
+              <i class="icon-next" @click="next"></i>
             </div>
             <div class="icon i-right">
               <i class="icon icon-not-favorite"></i>
@@ -60,7 +60,7 @@
         </div>
       </div>
     </transition>
-    <audio :src="currentSong.url" ref="audio"></audio>
+    <audio :src="currentSong.url" ref="audio" @canplay="readyPlay" @error="error"></audio>
   </div>
 </template>
 
@@ -73,8 +73,14 @@ import {prefixStyle} from 'common/js/dom'
 const transform = prefixStyle('transform')
 
 export default {
+  data() {
+    return {
+      readyPlayFlag: false
+    }
+  },
   computed: {
-    ...mapGetters(['fullScreen', 'playlist', 'currentSong', 'playing']),
+    ...mapGetters(['fullScreen', 'playlist', 'currentSong', 'playing', 'currentIndex',
+      'playlist']),
     playIcon() {
       return this.playing ? 'icon-play' : 'icon-pause'
     },
@@ -83,6 +89,9 @@ export default {
     },
     cdClass() {
       return this.playing ? 'play' : 'play pause'
+    },
+    disabledCls() {
+      return this.readyPlayFlag ? '' : 'disable'
     }
   },
   watch: {
@@ -102,10 +111,45 @@ export default {
   methods: {
     ...mapMutations({
       setFullScreen: types.SET_FULL_SCREEN,
-      setPlayingState: types.SET_PLAYING_STATE
+      setPlayingState: types.SET_PLAYING_STATE,
+      setCurrentIndex: types.SET_CURRENT_INDEX
     }),
+    error() {
+      this.readyPlayFlag = true //歌曲加载失败时使按钮可用
+    },
+    readyPlay() {
+      this.readyPlayFlag = true // 歌曲已准备好，避免快速点击dom出错
+    },
+    next() {
+      if (this.readyPlayFlag) {
+        let index = this.currentIndex + 1
+        if (index === this.playlist.length) {
+          index = 0 // 循环顺序播放
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.setPlayingState(true)
+        }
+        this.readyPlayFlag = false
+      }
+    },
+    previous() {
+      if (this.readyPlayFlag) {
+        let index = this.currentIndex - 1
+        if (index === -1) {
+          index = this.playlist.length// 循环顺序播放
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.setPlayingState(true)
+        }
+        this.readyPlayFlag = false
+      }
+    },
     clickPlay() {
-      this.setPlayingState(!this.playing)
+      if (this.readyPlayFlag) {
+        this.setPlayingState(!this.playing)
+      }
     },
     back() {
       this.setFullScreen(false)
