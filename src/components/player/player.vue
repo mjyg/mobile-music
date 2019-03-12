@@ -26,7 +26,8 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{formatTime(this.currentTime)}}</span>
             <div class="progress-bar-wrapper">
-              <progress-bar :percent="percent"></progress-bar>
+              <progress-bar :percent="percent"
+                            @touchProgressEnd="touchProgressEnd"></progress-bar>
             </div>
             <span class="time time-r">{{formatTime(this.currentSong.duration)}}</span>
           </div>
@@ -130,6 +131,12 @@ export default {
       setPlayingState: types.SET_PLAYING_STATE,
       setCurrentIndex: types.SET_CURRENT_INDEX
     }),
+    touchProgressEnd(percent) {
+      this.$refs.audio.currentTime = percent * this.currentSong.duration
+      if (!this.playing) {
+        this.clickPlay()
+      }
+    },
     updateTime(e) {
       this.currentTime = e.target.currentTime
     },
@@ -147,7 +154,7 @@ export default {
         }
         this.setCurrentIndex(index)
         if (!this.playing) {
-          this.setPlayingState(true)
+          this.clickPlay()
         }
         this.readyPlayFlag = false
       }
@@ -160,7 +167,7 @@ export default {
         }
         this.setCurrentIndex(index)
         if (!this.playing) {
-          this.setPlayingState(true)
+          this.clickPlay()
         }
         this.readyPlayFlag = false
       }

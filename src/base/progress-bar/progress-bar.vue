@@ -1,8 +1,9 @@
 <template>
   <div class="progress-bar" ref="proBar">
     <div class="bar-inner">
-      <div class="progress" ref="pro"></div>
-      <div class="progress-btn-wrapper" ref="proBtn">
+      <div class="progress" ref="progress"></div>
+      <div class="progress-btn-wrapper" ref="proBtn" @touchstart.prevent="touchStart"
+           @touchmove.prevent="touchMove" @touchend.prevent="touchEnd">
         <div class="progress-btn"></div>
       </div>
     </div>
@@ -23,9 +24,35 @@ export default {
   },
   watch: {
     percent(newVal) {
-      const barWidth = this.$refs.proBar.clientWidth - this.$refs.proBtn.clientWidth
-      const width = barWidth * newVal
-      this.$refs.pro.style.width = width + 'px'
+      if (newVal >= 0 && !this.touch.init) {
+        this.barWidth = this.$refs.proBar.clientWidth - this.$refs.proBtn.clientWidth
+        this._setMoveStyle(this.barWidth * newVal)
+      }
+    }
+  },
+  created() {
+    this.touch = {}
+  },
+  methods: {
+    touchStart(e) {
+      this.touch.init = true
+      this.touch.startX = e.touches[0].pageX
+      this.touch.left = this.$refs.progress.clientWidth
+    },
+    touchMove(e) {
+      if (this.touch.init) {
+        let moveWidth = e.touches[0].pageX - this.touch.startX
+        moveWidth = Math.min(Math.max(0, moveWidth + this.touch.left), this.barWidth)
+        this._setMoveStyle(moveWidth)
+      }
+    },
+    touchEnd() {
+      this.touch.init = false
+      const proWidth = this.$refs.progress.clientWidth
+      this.$emit('touchProgressEnd', proWidth / this.barWidth)
+    },
+    _setMoveStyle(width) {
+      this.$refs.progress.style.width = width + 'px'
       this.$refs.proBtn.style[transform] = `translateX(${width}px)`
     }
   }
