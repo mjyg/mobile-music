@@ -51,7 +51,6 @@ export default {
       this._emitPercent()
     },
     clickProgress(e) {
-      console.log(e.offsetX)
       this._setMoveStyle(e.offsetX) // offset是相对于带定位的父组件的x的坐标
       this._emitPercent()
     },

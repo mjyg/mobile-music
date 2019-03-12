@@ -61,7 +61,9 @@
           <p class="desc">{{currentSong.singer}}</p>
         </div>
         <div class="control">
-          <i @click.stop="clickPlay" :class="miniPlayIcon"></i>
+          <progress-circle :radius="32" :percent="percent">
+            <i @click.stop="clickPlay" :class="miniPlayIcon" class="icon-mini"></i>
+          </progress-circle>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
@@ -79,6 +81,7 @@ import * as types from 'store/mutation-types'
 import animations from 'create-keyframe-animation'
 import {prefixStyle} from 'common/js/dom'
 import ProgressBar from 'base/progress-bar/progress-bar'
+import ProgressCircle from 'base/progress-circle/progress-circle'
 
 const transform = prefixStyle('transform')
 
@@ -90,7 +93,8 @@ export default {
     }
   },
   components: {
-    ProgressBar
+    ProgressBar,
+    ProgressCircle
   },
   computed: {
     ...mapGetters(['fullScreen', 'playlist', 'currentSong', 'playing', 'currentIndex',
