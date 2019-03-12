@@ -16,22 +16,28 @@
         <div class="middle">
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd">
+              <div class="cd" :class="cdClass">
                 <img class="image" :src="currentSong.image">
               </div>
             </div>
           </div>
         </div>
         <div class="bottom">
-          <div class="operator">
+          <div class="operators">
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
             <div class="icon i-left">
               <i class="icon-prev"></i>
             </div>
-            <div class="icon i-left">
-              <i class="icon-play"></i>
+            <div class="icon i-center">
+              <i @click="clickPlay" :class="playIcon"></i>
+            </div>
+            <div class="icon i-right">
+              <i class="icon-next"></i>
+            </div>
+            <div class="icon i-right">
+              <i class="icon icon-not-favorite"></i>
             </div>
           </div>
         </div>
@@ -40,20 +46,21 @@
     <transition name="mini">
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
-          <img width="40" height="40" :src="currentSong.image">
+          <img width="40" height="40" :src="currentSong.image" :class="cdClass">
         </div>
         <div class="text">
           <h2 class="name">{{currentSong.name}}</h2>
           <p class="desc">{{currentSong.singer}}</p>
         </div>
         <div class="control">
-          <i class="icon-mini"></i>
+          <i @click.stop="clickPlay" :class="miniPlayIcon"></i>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <audio :src="currentSong.url" ref="audio"></audio>
   </div>
 </template>
 
@@ -67,12 +74,39 @@ const transform = prefixStyle('transform')
 
 export default {
   computed: {
-    ...mapGetters(['fullScreen', 'playlist', 'currentSong'])
+    ...mapGetters(['fullScreen', 'playlist', 'currentSong', 'playing']),
+    playIcon() {
+      return this.playing ? 'icon-play' : 'icon-pause'
+    },
+    miniPlayIcon() {
+      return this.playing ? 'icon-play-mini' : 'icon-pause-mini'
+    },
+    cdClass() {
+      return this.playing ? 'play' : 'play pause'
+    }
+  },
+  watch: {
+    currentSong() {
+      const self = this
+      this.$nextTick(() => {
+        self.$refs.audio.play()
+      })
+    },
+    playing(newVal) {
+      const audio = this.$refs.audio
+      this.$nextTick(() => {
+        newVal ? audio.play() : audio.pause()
+      })
+    }
   },
   methods: {
     ...mapMutations({
-      setFullScreen: types.SET_FULL_SCREEN
+      setFullScreen: types.SET_FULL_SCREEN,
+      setPlayingState: types.SET_PLAYING_STATE
     }),
+    clickPlay() {
+      this.setPlayingState(!this.playing)
+    },
     back() {
       this.setFullScreen(false)
     },
