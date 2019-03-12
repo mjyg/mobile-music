@@ -1,5 +1,5 @@
 <template>
-  <div class="progress-bar" ref="proBar">
+  <div class="progress-bar" ref="proBar" @click="clickProgress">
     <div class="bar-inner">
       <div class="progress" ref="progress"></div>
       <div class="progress-btn-wrapper" ref="proBtn" @touchstart.prevent="touchStart"
@@ -48,6 +48,14 @@ export default {
     },
     touchEnd() {
       this.touch.init = false
+      this._emitPercent()
+    },
+    clickProgress(e) {
+      console.log(e.offsetX)
+      this._setMoveStyle(e.offsetX) // offset是相对于带定位的父组件的x的坐标
+      this._emitPercent()
+    },
+    _emitPercent() {
       const proWidth = this.$refs.progress.clientWidth
       this.$emit('touchProgressEnd', proWidth / this.barWidth)
     },
