@@ -23,6 +23,13 @@
           </div>
         </div>
         <div class="bottom">
+          <div class="progress-wrapper">
+            <span class="time time-l">{{formatTime(this.currentTime)}}</span>
+            <div class="progress-bar-wrapper">
+              <progress-bar :percent="percent"></progress-bar>
+            </div>
+            <span class="time time-r">{{formatTime(this.currentSong.duration)}}</span>
+          </div>
           <div class="operators">
             <div class="icon i-left">
               <i class="icon-sequence"></i>
@@ -60,7 +67,8 @@
         </div>
       </div>
     </transition>
-    <audio :src="currentSong.url" ref="audio" @canplay="readyPlay" @error="error"></audio>
+    <audio :src="currentSong.url" ref="audio" @canplay="readyPlay" @error="error"
+           @timeupdate="updateTime"></audio>
   </div>
 </template>
 
@@ -69,14 +77,19 @@ import {mapGetters, mapMutations} from 'vuex'
 import * as types from 'store/mutation-types'
 import animations from 'create-keyframe-animation'
 import {prefixStyle} from 'common/js/dom'
+import ProgressBar from 'base/progress-bar/progress-bar'
 
 const transform = prefixStyle('transform')
 
 export default {
   data() {
     return {
-      readyPlayFlag: false
+      readyPlayFlag: false,
+      currentTime: 0
     }
+  },
+  components: {
+    ProgressBar
   },
   computed: {
     ...mapGetters(['fullScreen', 'playlist', 'currentSong', 'playing', 'currentIndex',
@@ -92,6 +105,9 @@ export default {
     },
     disabledCls() {
       return this.readyPlayFlag ? '' : 'disable'
+    },
+    percent() {
+      return this.currentTime / this.currentSong.duration
     }
   },
   watch: {
@@ -114,8 +130,11 @@ export default {
       setPlayingState: types.SET_PLAYING_STATE,
       setCurrentIndex: types.SET_CURRENT_INDEX
     }),
+    updateTime(e) {
+      this.currentTime = e.target.currentTime
+    },
     error() {
-      this.readyPlayFlag = true //歌曲加载失败时使按钮可用
+      this.readyPlayFlag = true // 歌曲加载失败时使按钮可用
     },
     readyPlay() {
       this.readyPlayFlag = true // 歌曲已准备好，避免快速点击dom出错
@@ -204,6 +223,19 @@ export default {
       const x = -(window.innerWidth / 2 - miniLeft)
       const y = window.innerHeight - normalPaddingTop - normalWidth / 2 - miniBottom
       return {x, y, scale}
+    },
+    formatTime(time) {
+      const min = time / 60 | 0
+      const sec = this._pad(time % 60 | 0)
+      return `${min}:${sec}`
+    },
+    _pad(num, count = 2) { // 补全0
+      let len = num.toString().length
+      while (len < count) {
+        num = '0' + num
+        len++
+      }
+      return num
     }
   }
 }
