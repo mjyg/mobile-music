@@ -21,6 +21,17 @@
               </div>
             </div>
           </div>
+          <scroll class="middle-r" ref="lyricList"
+                  :data="currentLyric && currentLyric.lines">
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric">
+                <p ref="lyricLine" :class="['text', {current: currentLyricLine === index}]"
+                   v-for="(line, index) of currentLyric.lines">
+                  {{line.txt}}
+                </p>
+              </div>
+            </div>
+          </scroll>
         </div>
         <div class="bottom">
           <div class="progress-wrapper">
@@ -85,6 +96,7 @@ import ProgressCircle from 'base/progress-circle/progress-circle'
 import {playMode} from 'common/js/config'
 import {shuffle} from 'common/js/util'
 import LyricParse from 'lyric-parser'
+import Scroll from 'base/scroll/scroll'
 
 const transform = prefixStyle('transform')
 
@@ -93,12 +105,14 @@ export default {
     return {
       readyPlayFlag: false,
       currentTime: 0,
-      currentLyric: null
+      currentLyric: null,
+      currentLyricLine: 0
     }
   },
   components: {
     ProgressBar,
-    ProgressCircle
+    ProgressCircle,
+    Scroll
   },
   computed: {
     ...mapGetters(['fullScreen', 'playlist', 'currentSong', 'playing', 'currentIndex',
@@ -291,8 +305,20 @@ export default {
     },
     _getLyric() {
       this.currentSong.getLyric().then((lyric) => {
-        this.currentLyric = new LyricParse(lyric)
+        this.currentLyric = new LyricParse(lyric, this._handleLyric)
+        if (this.playing) {
+          this.currentLyric.play() 
+        }
       })
+    },
+    _handleLyric({lineNum}) {
+      this.currentLyricLine = lineNum
+      if (lineNum > 5) {
+        const currentLyricEl = this.$refs.lyricLine[lineNum - 5]
+        this.$refs.lyricList.scrollToElement(currentLyricEl, 1000)
+      } else {
+        this.$refs.lyricList.scrollTo(0, 0, 1000)
+      }
     }
   }
 }
