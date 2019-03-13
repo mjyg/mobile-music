@@ -84,6 +84,7 @@ import ProgressBar from 'base/progress-bar/progress-bar'
 import ProgressCircle from 'base/progress-circle/progress-circle'
 import {playMode} from 'common/js/config'
 import {shuffle} from 'common/js/util'
+import LyricParse from 'lyric-parser'
 
 const transform = prefixStyle('transform')
 
@@ -91,7 +92,8 @@ export default {
   data() {
     return {
       readyPlayFlag: false,
-      currentTime: 0
+      currentTime: 0,
+      currentLyric: null
     }
   },
   components: {
@@ -126,7 +128,7 @@ export default {
       const self = this
       this.$nextTick(() => {
         self.$refs.audio.play()
-        this.currentSong.getLyric()
+        this.currentLyric = this._getLyric()
       })
     },
     playing(newVal) {
@@ -286,6 +288,11 @@ export default {
         len++
       }
       return num
+    },
+    _getLyric() {
+      this.currentSong.getLyric().then((lyric) => {
+        this.currentLyric = new LyricParse(lyric)
+      })
     }
   }
 }
