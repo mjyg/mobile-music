@@ -3,7 +3,7 @@
     <div class="bar-inner">
       <div class="progress" ref="progress"></div>
       <div class="progress-btn-wrapper" ref="proBtn" @touchstart.prevent="touchStart"
-           @touchmove.prevent="touchMove" @touchend.prevent="touchEnd">
+           @touchmove.prevent="touchMove" @touchend="touchEnd">
         <div class="progress-btn"></div>
       </div>
     </div>
@@ -14,6 +14,7 @@
 import {prefixStyle} from 'common/js/dom'
 
 const transform = prefixStyle('transform')
+const btnWidth = 16
 
 export default {
   props: {
@@ -25,7 +26,7 @@ export default {
   watch: {
     percent(newVal) {
       if (newVal >= 0 && !this.touch.init) {
-        this.barWidth = this.$refs.proBar.clientWidth - this.$refs.proBtn.clientWidth
+        this.barWidth = this.$refs.proBar.clientWidth - btnWidth
         this._setMoveStyle(this.barWidth * newVal)
       }
     }
@@ -51,7 +52,11 @@ export default {
       this._emitPercent()
     },
     clickProgress(e) {
-      this._setMoveStyle(e.offsetX) // offset是相对于带定位的父组件的x的坐标
+      // 点击button的时候获取的offsetX不对
+      // this._setMoveStyle(e.offsetX) // offset是相对于带定位的父组件的x的坐标
+      const rect = this.$refs.proBar.getBoundingClientRect() // 元素到视口的位置
+      const width = e.pageX - rect.left
+      this._setMoveStyle(width)
       this._emitPercent()
     },
     _emitPercent() {
