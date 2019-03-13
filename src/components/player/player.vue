@@ -126,6 +126,7 @@ export default {
       const self = this
       this.$nextTick(() => {
         self.$refs.audio.play()
+        this.currentSong.getLyric()
       })
     },
     playing(newVal) {
