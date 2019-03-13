@@ -13,8 +13,9 @@
           <h1 class="title">{{currentSong.name}}</h1>
           <h2 class="subtitle">{{currentSong.singer}}</h2>
         </div>
-        <div class="middle">
-          <div class="middle-l">
+        <div class="middle" @touchstart.prevent="touchStart" @touchmove.prevent="touchMove"
+             @touchend.prevent="touchEnd">
+          <div class="middle-l" ref="cdSpan">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" :class="cdClass">
                 <img class="image" :src="currentSong.image">
@@ -26,7 +27,7 @@
             <div class="lyric-wrapper">
               <div v-if="currentLyric">
                 <p ref="lyricLine" :class="['text', {current: currentLyricLine === index}]"
-                   v-for="(line, index) of currentLyric.lines">
+                   v-for="(line, index) of currentLyric.lines" :key="index">
                   {{line.txt}}
                 </p>
               </div>
@@ -34,6 +35,10 @@
           </scroll>
         </div>
         <div class="bottom">
+          <div class="dot-wrapper">
+            <span :class="['dot', {active: currentShow === 'cd'}]"></span>
+            <span :class="['dot', {active: currentShow !== 'cd'}]"></span>
+          </div>
           <div class="progress-wrapper">
             <span class="time time-l">{{formatTime(this.currentTime)}}</span>
             <div class="progress-bar-wrapper">
@@ -99,6 +104,7 @@ import LyricParse from 'lyric-parser'
 import Scroll from 'base/scroll/scroll'
 
 const transform = prefixStyle('transform')
+const transitionDuration = prefixStyle('transitionDuration')
 
 export default {
   data() {
@@ -106,7 +112,8 @@ export default {
       readyPlayFlag: false,
       currentTime: 0,
       currentLyric: null,
-      currentLyricLine: 0
+      currentLyricLine: 0,
+      currentShow: 'cd'
     }
   },
   components: {
@@ -152,6 +159,9 @@ export default {
       })
     }
   },
+  created() {
+    this.touch = {}
+  },
   methods: {
     ...mapMutations({
       setFullScreen: types.SET_FULL_SCREEN,
@@ -160,6 +170,60 @@ export default {
       setMode: types.SET_PLAY_MODE,
       setPlaylist: types.SET_PLAYLIST
     }),
+    touchStart(e) {
+      this.touch.init = true
+      const touch = e.touches[0]
+      this.touch.startX = touch.pageX
+      this.touch.startY = touch.pageY
+    },
+    touchMove(e) {
+      if (this.touch.init) {
+        const touch = e.touches[0]
+        const moveX = touch.pageX - this.touch.startX
+        const moveY = touch.pageY - this.touch.startY
+        if (Math.abs(moveX) < Math.abs(moveY)) { // 纵坐标偏移大于横坐标，不应该左右滑动
+          return
+        }
+        const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
+        const offsetWidth = Math.max(Math.min(0, left + moveX), -window.innerWidth)
+        this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
+        this.$refs.lyricList.$el.style[transform] = `translateX(${offsetWidth}px)`
+        this.$refs.lyricList.$el.style[transitionDuration] = 0
+        this.$refs.cdSpan.style.opacity = 1 - this.touch.percent
+        this.$refs.cdSpan.style[transitionDuration] = 0
+      }
+    },
+    touchEnd() {
+      this.touch.init = false
+      const percent = this.touch.percent
+      console.log(percent)
+      let offsetWidth = 0
+      let opacity = 1
+      if (this.currentShow === 'cd') {
+        if (percent > 0.1) { // 从右向左滑，滑动距离超过10%，则滑动到歌词页面
+          this.currentShow = 'lyric'
+          offsetWidth = -window.innerWidth
+          opacity = 0
+        } else {
+          offsetWidth = 0
+          opacity = 1
+        }
+      } else {
+        if (percent < 0.9 && percent > 0) { // 从左向右滑
+          this.currentShow = 'cd'
+          offsetWidth = 0
+          opacity = 1
+        } else {
+          offsetWidth = -window.innerWidth
+          opacity = 0
+        }
+      }
+      this.$refs.lyricList.$el.style[transform] = `translateX(${offsetWidth}px)`
+      this.$refs.lyricList.$el.style[transitionDuration] = '0.3s'
+      this.$refs.cdSpan.style.opacity = opacity
+      this.$refs.cdSpan.style[transitionDuration] = '0.3s'
+      this.touch.percent = -1
+    },
     end() {
       if (this.mode === playMode.loop) {
         this.loop()
@@ -307,7 +371,7 @@ export default {
       this.currentSong.getLyric().then((lyric) => {
         this.currentLyric = new LyricParse(lyric, this._handleLyric)
         if (this.playing) {
-          this.currentLyric.play() 
+          this.currentLyric.play()
         }
       })
     },
