@@ -25,6 +25,11 @@ module.exports = {
         target: 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg?',
         changeOrigin: true,
         secure: false
+      },
+      '/getTopList': {
+        target: 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg?',
+        changeOrigin: true,
+        secure: false
       }
     },
 
