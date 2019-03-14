@@ -156,12 +156,12 @@ export default {
   },
   watch: {
     currentSong(newVal, oldVal) {
-      if (newVal.id === oldVal.id) {
-        return
-      }
       if (this.currentLyric) {
         this.currentLyric.seek(0)
         this.currentLyric.stop()
+      }
+      if (newVal.id === oldVal.id) {
+        return
       }
       this.currentLyricTxt = ''
       const self = this
