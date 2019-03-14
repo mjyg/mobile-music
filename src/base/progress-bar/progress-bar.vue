@@ -61,7 +61,7 @@ export default {
     },
     _emitPercent() {
       const proWidth = this.$refs.progress.clientWidth
-      this.$emit('touchProgressEnd', proWidth / this.barWidth)
+      this.$emit('changeProgress', proWidth / this.barWidth)
     },
     _setMoveStyle(width) {
       this.$refs.progress.style.width = width + 'px'

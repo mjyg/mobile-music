@@ -21,6 +21,12 @@
                 <img class="image" :src="currentSong.image">
               </div>
             </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{currentLyricTxt}}</div>
+            </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{errorTip}}</div>
+            </div>
           </div>
           <scroll class="middle-r" ref="lyricList"
                   :data="currentLyric && currentLyric.lines">
@@ -43,7 +49,9 @@
             <span class="time time-l">{{formatTime(this.currentTime)}}</span>
             <div class="progress-bar-wrapper">
               <progress-bar :percent="percent"
-                            @touchProgressEnd="touchProgressEnd"></progress-bar>
+                            @changeProgress="changeProgress">
+
+              </progress-bar>
             </div>
             <span class="time time-r">{{formatTime(this.currentSong.duration)}}</span>
           </div>
@@ -51,13 +59,13 @@
             <div class="icon i-left" @click="changeMode">
               <i :class="iconMode"></i>
             </div>
-            <div class="icon i-left" :class="disabledCls">
+            <div class="icon i-left">
               <i class="icon-prev"  @click="previous"></i>
             </div>
             <div class="icon i-center" :class="disabledCls">
               <i @click="clickPlay" :class="playIcon"></i>
             </div>
-            <div class="icon i-right" :class="disabledCls">
+            <div class="icon i-right">
               <i class="icon-next" @click="next"></i>
             </div>
             <div class="icon i-right">
@@ -113,7 +121,9 @@ export default {
       currentTime: 0,
       currentLyric: null,
       currentLyricLine: 0,
-      currentShow: 'cd'
+      currentShow: 'cd',
+      currentLyricTxt: '未获取到歌词',
+      errorTip: ''
     }
   },
   components: {
@@ -145,12 +155,20 @@ export default {
     }
   },
   watch: {
-    currentSong() {
+    currentSong(newVal, oldVal) {
+      if (newVal.id === oldVal.id) {
+        return
+      }
+      if (this.currentLyric) {
+        this.currentLyric.seek(0)
+        this.currentLyric.stop()
+      }
+      this.currentLyricTxt = ''
       const self = this
-      this.$nextTick(() => {
+      setTimeout(() => {
         self.$refs.audio.play()
         this.currentLyric = this._getLyric()
-      })
+      }, 1000) // 保证手机从后台切到前台重新播放歌曲
     },
     playing(newVal) {
       const audio = this.$refs.audio
@@ -233,6 +251,10 @@ export default {
     loop() {
       this.$refs.audio.currentTime = 0
       this.$refs.audio.play()
+      this.setPlayingState(true)
+      if (this.currentLyric) {
+        this.currentLyric.seek(0)
+      }
     },
     changeMode() {
       const mode = (this.mode + 1) % 3
@@ -253,23 +275,30 @@ export default {
       })
       this.setCurrentIndex(index)
     },
-    touchProgressEnd(percent) {
-      this.$refs.audio.currentTime = percent * this.currentSong.duration
+    changeProgress(percent) {
+      const time = percent * this.currentSong.duration
+      this.$refs.audio.currentTime = time
       if (!this.playing) {
-        this.clickPlay()
+        this.clickPlay(time)
       }
+      this.currentLyric.seek(time * 1000)
     },
     updateTime(e) {
       this.currentTime = e.target.currentTime
     },
     error() {
-      this.readyPlayFlag = true // 歌曲加载失败时使按钮可用
+      this.readyPlayFlag = false // 歌曲加载失败时使按钮可用
+      this.errorTip = '播放歌曲出错'
     },
     readyPlay() {
       this.readyPlayFlag = true // 歌曲已准备好，避免快速点击dom出错
+      this.errorTip = ''
     },
     next() {
-      if (this.readyPlayFlag) {
+      this.readyPlayFlag = true
+      if (this.playlist.length === 1) { // 歌曲列表只有一首歌时，currentIndex不会改变，用lopp方法播放
+        this.loop()
+      } else {
         let index = this.currentIndex + 1
         if (index === this.playlist.length) {
           index = 0 // 循环顺序播放
@@ -282,7 +311,10 @@ export default {
       }
     },
     previous() {
-      if (this.readyPlayFlag) {
+      this.readyPlayFlag = true
+      if (this.playlist.length === 1) { // 歌曲列表只有一首歌时，currentIndex不会改变，用lopp方法播放
+        this.loop()
+      } else {
         let index = this.currentIndex - 1
         if (index === -1) {
           index = this.playlist.length - 1// 循环顺序播放
@@ -297,6 +329,11 @@ export default {
     clickPlay() {
       if (this.readyPlayFlag) {
         this.setPlayingState(!this.playing)
+        if (this.currentLyric) {
+          this.currentLyric.togglePlay()
+        }
+      } else {
+        this.currentLyric.stop()
       }
     },
     back() {
@@ -328,7 +365,7 @@ export default {
       })
       animations.runAnimation(this.$refs.cdWrapper, 'move', done)
     },
-    afterEnter(el, done) {
+    afterEnter() {
       animations.unregisterAnimation('move')
       this.$refs.cdWrapper.style.animation = ''
     },
@@ -338,7 +375,7 @@ export default {
       this.$refs.cdWrapper.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`
       this.$refs.cdWrapper.addEventListener('transitionend', done)
     },
-    afterLeave(el, done) {
+    afterLeave() {
       this.$refs.cdWrapper.style.transition = ''
       this.$refs.cdWrapper.style[transform] = ''
     },
@@ -369,12 +406,16 @@ export default {
     _getLyric() {
       this.currentSong.getLyric().then((lyric) => {
         this.currentLyric = new LyricParse(lyric, this._handleLyric)
-        if (this.playing) {
+        if (this.playing && this.readyPlayFlag) {
           this.currentLyric.play()
         }
+      }).catch(() => {
+        this.currentLyric = null
+        this.currentLyricLine = 0
+        this.currentLyricTxt = ''
       })
     },
-    _handleLyric({lineNum}) {
+    _handleLyric({lineNum, txt}) {
       this.currentLyricLine = lineNum
       if (lineNum > 5) {
         const currentLyricEl = this.$refs.lyricLine[lineNum - 5]
@@ -382,6 +423,7 @@ export default {
       } else {
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
+      this.currentLyricTxt = txt
     }
   }
 }
