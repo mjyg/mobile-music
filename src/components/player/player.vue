@@ -24,9 +24,6 @@
             <div class="playing-lyric-wrapper">
               <div class="playing-lyric">{{currentLyricTxt}}</div>
             </div>
-            <div class="playing-lyric-wrapper">
-              <div class="playing-lyric">{{errorTip}}</div>
-            </div>
           </div>
           <scroll class="middle-r" ref="lyricList"
                   :data="currentLyric && currentLyric.lines">
@@ -122,8 +119,7 @@ export default {
       currentLyric: null,
       currentLyricLine: 0,
       currentShow: 'cd',
-      currentLyricTxt: '未获取到歌词',
-      errorTip: ''
+      currentLyricTxt: '未获取到歌词'
     }
   },
   components: {
@@ -288,11 +284,11 @@ export default {
     },
     error() {
       this.readyPlayFlag = false // 歌曲加载失败时使按钮可用
-      this.errorTip = '播放歌曲出错'
+      this.currentLyricTxt = '播放出错'
+      this.currentLyric = null
     },
     readyPlay() {
       this.readyPlayFlag = true // 歌曲已准备好，避免快速点击dom出错
-      this.errorTip = ''
     },
     next() {
       this.readyPlayFlag = true
@@ -423,7 +419,7 @@ export default {
       } else {
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
-      this.currentLyricTxt = txt
+      this.currentLyricTxt = this.readyPlayFlag ? txt : '播放出错'
     }
   }
 }
