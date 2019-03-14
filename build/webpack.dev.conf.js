@@ -79,6 +79,21 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           console.log(e)
         })
       })
+      app.get('/api/getDiscSongList', function (req, res) {
+        var url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
+        console.log(req, res)
+        const id = req.query.id
+        axios.get(url, {
+          headers: {
+            referer: `https://y.qq.com/n/m/detail/taoge/index.html?ADTAG=newyqq.taoge&id=${id}`,
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
     },
     clientLogLevel: 'warning',
     historyApiFallback: {

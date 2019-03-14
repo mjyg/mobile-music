@@ -14,7 +14,8 @@
           <div class="recommend-list">
             <h1 class="list-title">热门歌单推荐</h1>
             <ul>
-              <li v-for="item of disLists" class="item" :key="item.content_id">
+              <li v-for="item of disLists" class="item" :key="item.content_id"
+                  @click="selectDis(item)">
                 <div class="icon">
                   <img width="60" height="60" v-lazy="item.cover"/>
                 </div>
@@ -29,6 +30,7 @@
         <div class="loading-container" v-show="!disLists.length"></div>
         <loading ></loading>
       </scroll>
+      <router-view></router-view>
     </div>
 </template>
 
@@ -39,6 +41,8 @@ import Slider from 'base/slider/slider'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
 import {playlistMixin} from 'common/js/mixin'
+import {mapMutations} from 'vuex'
+import * as types from 'store/mutation-types'
 
 export default {
   data() {
@@ -58,8 +62,17 @@ export default {
     this._getDisList()
   },
   methods: {
+    ...mapMutations({
+      setDisc: types.SET_DISC
+    }),
     handlePlaylist() {
       this.setStyle(this.$refs.recommend, this.$refs.scroll) // 调用混入对象playlistMixin里的方法
+    },
+    selectDis(item) {
+      this.$router.push({
+        path: `/recommend/${item.content_id}`
+      })
+      this.setDisc(item)
     },
     _getRecommend() {
       getRecommend().then(data => {
