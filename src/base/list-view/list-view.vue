@@ -75,6 +75,9 @@ export default {
     this.groupHeight = []
   },
   methods: {
+    refresh() {
+      this.$refs.listView.refresh()
+    },
     onShortcutTouchStart(e) { // 监听触摸开始事件
       let anchorIndex = getData(e.target, 'index') // 获取点击的group序号
       this._scrollTo(anchorIndex) // 滚动条滚动到相应group

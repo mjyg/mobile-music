@@ -286,6 +286,7 @@ export default {
       this.readyPlayFlag = false // 歌曲加载失败时使按钮可用
       this.currentLyricTxt = '播放出错'
       this.currentLyric = null
+      this.setPlayingState(false)
     },
     readyPlay() {
       this.readyPlayFlag = true // 歌曲已准备好，避免快速点击dom出错

@@ -1,6 +1,6 @@
 <template>
-  <div class="singer">
-    <list-view :data="singerList" @clickItem="clickItem"></list-view>
+  <div class="singer" ref="singer">
+    <list-view :data="singerList" @clickItem="clickItem" ref="list"></list-view>
     <router-view></router-view>
   </div>
 </template>
@@ -13,6 +13,7 @@ import Singer from 'common/js/singer'
 import ListView from 'base/list-view/list-view'
 import {mapMutations} from 'vuex'
 import * as types from 'store/mutation-types'
+import {playlistMixin} from 'common/js/mixin'
 
 const HOT = '热门'
 const HOT_NUM = 10 // 前10为热门歌手
@@ -23,6 +24,7 @@ export default {
       singerList: []
     }
   },
+  mixins: [playlistMixin],
   components: {
     ListView
   },
@@ -33,6 +35,9 @@ export default {
     ...mapMutations({ // mapMutations返回的是一个对象，使用扩展运算符可以把此对象混入到外部对象中
       setSinger: types.SET_SINGER
     }),
+    handlePlaylist() {
+      this.setStyle(this.$refs.singer, this.$refs.list) // 调用混入对象playlistMixin里的方法
+    },
     clickItem(singer) {
       this.$router.push({
         path: `/singer/${singer.id}`

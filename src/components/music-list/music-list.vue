@@ -32,6 +32,7 @@ import Scroll from 'base/scroll/scroll'
 import {prefixStyle} from 'common/js/dom'
 import Loading from 'base/loading/loading'
 import {mapActions} from 'vuex'
+import {playlistMixin} from 'common/js/mixin'
 
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
@@ -41,6 +42,7 @@ export default {
     return {
     }
   },
+  mixins: [playlistMixin],
   components: {
     Loading,
     SongList,
@@ -76,6 +78,9 @@ export default {
     ...mapActions([
       'selectPlay', 'randomPlay'
     ]),
+    handlePlaylist() {
+      this.setStyle(this.$refs.songsScroll.$el, this.$refs.songsScroll) // 调用混入对象playlistMixin里的方法
+    },
     random() {
       this.randomPlay({list: this.songs})
     },

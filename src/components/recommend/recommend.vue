@@ -1,5 +1,5 @@
 <template>
-    <div class="recommend">
+    <div class="recommend" ref="recommend">
       <scroll class="recommend-content" :data="disLists" ref="scroll">
         <div>
           <div class="slider-wrapper" v-if="recommends.length">
@@ -38,6 +38,7 @@ import {ERR_OK} from 'api/config'
 import Slider from 'base/slider/slider'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
+import {playlistMixin} from 'common/js/mixin'
 
 export default {
   data() {
@@ -46,6 +47,7 @@ export default {
       disLists: []
     }
   },
+  mixins: [playlistMixin],
   components: {
     Slider,
     Scroll,
@@ -56,6 +58,9 @@ export default {
     this._getDisList()
   },
   methods: {
+    handlePlaylist() {
+      this.setStyle(this.$refs.recommend, this.$refs.scroll) // 调用混入对象playlistMixin里的方法
+    },
     _getRecommend() {
       getRecommend().then(data => {
         if (data.code === ERR_OK) {
