@@ -187,16 +187,12 @@ export default {
         const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
         const offsetWidth = Math.max(Math.min(0, left + moveX), -window.innerWidth)
         this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
-        this.$refs.lyricList.$el.style[transform] = `translateX(${offsetWidth}px)`
-        this.$refs.lyricList.$el.style[transitionDuration] = 0
-        this.$refs.cdSpan.style.opacity = 1 - this.touch.percent
-        this.$refs.cdSpan.style[transitionDuration] = 0
+        this._setMoveStyle(offsetWidth, 0, 1 - this.touch.percent)
       }
     },
     touchEnd() {
       this.touch.init = false
       const percent = this.touch.percent
-      console.log(percent)
       let offsetWidth = 0
       let opacity = 1
       if (this.currentShow === 'cd') {
@@ -218,11 +214,14 @@ export default {
           opacity = 0
         }
       }
-      this.$refs.lyricList.$el.style[transform] = `translateX(${offsetWidth}px)`
-      this.$refs.lyricList.$el.style[transitionDuration] = '0.3s'
-      this.$refs.cdSpan.style.opacity = opacity
-      this.$refs.cdSpan.style[transitionDuration] = '0.3s'
+      this._setMoveStyle(offsetWidth, '0.3s', opacity)
       this.touch.percent = -1
+    },
+    _setMoveStyle(offsetWidth, duration, opacity) {
+      this.$refs.lyricList.$el.style[transform] = `translateX(${offsetWidth}px)`
+      this.$refs.lyricList.$el.style[transitionDuration] = duration
+      this.$refs.cdSpan.style.opacity = opacity
+      this.$refs.cdSpan.style[transitionDuration] = duration
     },
     end() {
       if (this.mode === playMode.loop) {
