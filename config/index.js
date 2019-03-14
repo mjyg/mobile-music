@@ -20,6 +20,11 @@ module.exports = {
         target: 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg?',
         changeOrigin: true,
         secure: false
+      },
+      '/getRank': {
+        target: 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg?',
+        changeOrigin: true,
+        secure: false
       }
     },
 
