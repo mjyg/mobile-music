@@ -16,9 +16,11 @@
         </div>
       </div>
     </div>
-    <div class="search-result" v-show="query">
-      <suggest :query="query"></suggest>
+    <div class="search-result" v-show="query" ref="searchResult">
+      <suggest :query="query" @selectSinger="selectSinger" ref="suggest"
+               @selectSong="selectSong"></suggest>
     </div>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -27,6 +29,9 @@ import SearchBox from 'base/search-box/search-box'
 import {getHotKey} from 'api/search'
 import {ERR_OK} from 'api/config'
 import Suggest from 'components/suggest/suggest'
+import Singer from 'common/js/singer'
+import {mapMutations, mapActions} from 'vuex'
+import {playlistMixin} from 'common/js/mixin'
 
 export default {
   data() {
@@ -35,6 +40,7 @@ export default {
       query: ''
     }
   },
+  mixins: [playlistMixin],
   components: {
     SearchBox,
     Suggest
@@ -43,6 +49,22 @@ export default {
     this._getHotKey()
   },
   methods: {
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    }),
+    ...mapActions(['insertSong']),
+    handlePlaylist() {
+      this.setStyle(this.$refs.searchResult, this.$refs.suggest)
+    },
+    selectSong(item) {
+      this.insertSong(item)
+    },
+    selectSinger(item) {
+      this.$router.push({
+        path: `/search/${item.singermid}`
+      })
+      this.setSinger(new Singer(item.singermid, item.singername))
+    },
     onQuery(query) {
       this.query = query
     },

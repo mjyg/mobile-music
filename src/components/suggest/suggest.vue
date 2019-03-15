@@ -1,8 +1,9 @@
 <template>
   <scroll class="suggest" :data="suggest" @scrollToEnd="onScrollToEnd"
-          :pullup="true">
+          :pullup="true" ref="suggest">
     <ul class="suggest-list">
-      <li class="suggest-item" v-for="(item, index) of suggest" :key="index">
+      <li class="suggest-item" v-for="(item, index) of suggest" :key="index"
+          @click="selectSuggest(item)">
         <div class="icon">
           <i :class="setSuggestIcon(item)"></i>
         </div>
@@ -48,6 +49,16 @@ export default {
     }
   },
   methods: {
+    refresh() {
+      this.$refs.suggest.refresh()
+    },
+    selectSuggest(item) {
+      if (item.type === TYPE_SINGER) {
+        this.$emit('selectSinger', item)
+      } else {
+        this.$emit('selectSong', item)
+      }
+    },
     onScrollToEnd() {
       this._searchMore()
     },
