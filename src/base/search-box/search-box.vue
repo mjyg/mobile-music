@@ -27,6 +27,9 @@ export default {
   methods: {
     clear() {
       this.query = ' '
+    },
+    setQuery(query) { // 外部组件调用此方法修改query
+      this.query = query
     }
   }
 }
