@@ -21,12 +21,12 @@ export default {
   },
   created() {
     this.$watch('query', (newVal) => {
-      this.$emit('query', newVal)
+      this.$emit('query', newVal) // 当query改变时，派发query事件，把query值传递出去
     })
   },
   methods: {
     clear() {
-      this.query = ' '
+      this.query = ''
     },
     setQuery(query) { // 外部组件调用此方法修改query
       this.query = query
