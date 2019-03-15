@@ -23,6 +23,10 @@ export default {
     listenScroll: {
       type: Boolean,
       default: false
+    },
+    pullup: { // 是否支持上拉刷新
+      type: Boolean,
+      default: false
     }
   },
   mounted() {
@@ -50,6 +54,13 @@ export default {
         const self = this
         this.scroll.on('scroll', (pos) => {
           self.$emit('scroll', pos) // 如果需要监听scroll，则往父组件派发一个事件，传递位置参数
+        })
+      }
+      if (this.pullup) {
+        this.scroll.on('scrollEnd', () => {
+          if (this.scroll.y < (this.scroll.maxScrollY + 50)) { // 快要滚动到底部
+            this.$emit('scrollToEnd')
+          }
         })
       }
     },

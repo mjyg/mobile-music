@@ -1,5 +1,6 @@
 <template>
-  <div class="suggest">
+  <scroll class="suggest" :data="suggest" @scrollToEnd="onScrollToEnd"
+          :pullup="true">
     <ul class="suggest-list">
       <li class="suggest-item" v-for="(item, index) of suggest" :key="index">
         <div class="icon">
@@ -9,22 +10,31 @@
           <p class="text" v-html="setSuggestText(item)">}}</p>
         </div>
       </li>
+      <loading v-show="hasMore" title=""></loading>
     </ul>
-  </div>
+  </scroll>
 </template>
 
 <script>
 import {getSuggest} from 'api/search'
 import {ERR_OK} from 'api/config'
 import {createSong} from 'common/js/song'
+import Scroll from 'base/scroll/scroll'
+import Loading from 'base/loading/loading'
 
 const TYPE_SINGER = 'singer'
+const perpage = 20
 
 export default {
   data() {
     return {
-      suggest: []
+      suggest: [],
+      hasMore: true
     }
+  },
+  components: {
+    Scroll,
+    Loading
   },
   props: {
     query: {
@@ -33,34 +43,54 @@ export default {
     }
   },
   watch: {
-    query(newVal) {
-      this._getSuggest(newVal)
+    query() {
+      this._search()
     }
   },
-  created() {
-  },
   methods: {
+    onScrollToEnd() {
+      this._searchMore()
+    },
     setSuggestText(item) {
       return item.type === TYPE_SINGER ? item.singername : `${item.name}--${item.singer}`
     },
     setSuggestIcon(item) {
-      return item.type === TYPE_SINGER ? `icon-mine` : 'icon-music'
+      return item.type === TYPE_SINGER ? 'icon-mine' : 'icon-music'
     },
-    _getSuggest(query) {
-      getSuggest(query, 1).then((res) => {
+    _search() {
+      this.firstSearch = true
+      this.suggest = []
+      this.hasMore = true
+      this.page = 0
+      this._getSuggest()
+    },
+    _searchMore() {
+      if (!this.hasMore) {
+        return
+      }
+      this.firstSearch = false
+      this.page += 1
+      this._getSuggest()
+    },
+    _getSuggest() {
+      getSuggest(this.query, this.page, perpage).then((res) => {
         if (res.code === ERR_OK) {
           this._handleSuggestData(res.data)
+          this._checkHasMore(res.data.song)
         }
       })
     },
+    _checkHasMore(data) {
+      if (!data.list.length ||
+        (data.curpage - 1) * perpage + data.curnum >= data.totalnum) {
+        this.hasMore = false
+      }
+    },
     _handleSuggestData(data) {
-      this.suggest = []
-      if (data.zhida && data.zhida.singername) {
+      if (this.firstSearch && data.zhida && data.zhida.singerid) {
         this.suggest.push({...data.zhida, ...{type: TYPE_SINGER}})
       }
-      if (data.song && data.song.list) {
-        this._normalSong(data.song.list)
-      }
+      this._normalSong(data.song.list)
     },
     _normalSong(list) {
       for (const item of list) {
