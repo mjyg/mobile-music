@@ -1,7 +1,7 @@
 <template>
   <div class="search-box">
     <i class="icon-search"></i>
-    <input class="box" v-model="query" :placeholder="placeholder"/>
+    <input class="box" v-model="query" :placeholder="placeholder" ref="searchInput"/>
     <i v-show="query" class="icon-dismiss" @click="clear"></i>
   </div>
 </template>
@@ -32,6 +32,9 @@ export default {
     },
     setQuery(query) { // 外部组件调用此方法修改query
       this.query = query
+    },
+    blur() {
+      this.$refs.searchInput.blur() //搜索输入框失去焦点，隐藏输入键盘
     }
   }
 }

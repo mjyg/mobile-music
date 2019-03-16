@@ -1,6 +1,6 @@
 <template>
   <scroll class="suggest" :data="suggest" @scrollToEnd="onScrollToEnd"
-          :pullup="true" ref="suggest">
+          :pullup="true" ref="suggest" @beforeScroll="beforeScroll" :beforeScroll="true">
     <ul class="suggest-list">
       <li class="suggest-item" v-for="(item, index) of suggest" :key="index"
           @click="selectSuggest(item)">
@@ -54,6 +54,9 @@ export default {
     }
   },
   methods: {
+    beforeScroll() {
+      this.$emit('beforeScroll')
+    },
     refresh() {
       this.$refs.suggest.refresh()
     },

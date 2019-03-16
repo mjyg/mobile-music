@@ -18,7 +18,7 @@
     </div>
     <div class="search-result" v-show="query" ref="searchResult">
       <suggest :query="query" @selectSinger="selectSinger" ref="suggest"
-               @selectSong="selectSong"></suggest>
+               @selectSong="selectSong" @beforeScroll="beforeScroll"></suggest>
     </div>
     <router-view></router-view>
   </div>
@@ -55,6 +55,9 @@ export default {
     ...mapActions(['insertSong']),
     handlePlaylist() {
       this.setStyle(this.$refs.searchResult, this.$refs.suggest)
+    },
+    beforeScroll() {
+      this.$refs.searchBox.blur()
     },
     selectSong(item) {
       this.insertSong(item)
