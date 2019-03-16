@@ -7,6 +7,8 @@
 </template>
 
 <script>
+import {debounce} from 'common/js/util'
+
 export default {
   data() {
     return {
@@ -20,9 +22,9 @@ export default {
     }
   },
   created() {
-    this.$watch('query', (newVal) => {
+    this.$watch('query', debounce((newVal) => { // 调用节流函数
       this.$emit('query', newVal) // 当query改变时，派发query事件，把query值传递出去
-    })
+    }, 200))
   },
   methods: {
     clear() {
