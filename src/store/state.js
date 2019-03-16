@@ -10,5 +10,6 @@ export const state = {
   mode: playMode.sequence,
   currentIndex: -1,
   disc: {},
-  rank: {}
+  rank: {},
+  searchHistory: []
 }

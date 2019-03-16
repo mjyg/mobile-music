@@ -34,7 +34,7 @@ export default {
       this.query = query
     },
     blur() {
-      this.$refs.searchInput.blur() //搜索输入框失去焦点，隐藏输入键盘
+      this.$refs.searchInput.blur() // 搜索输入框失去焦点，隐藏输入键盘
     }
   }
 }

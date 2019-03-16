@@ -14,6 +14,16 @@
             </li>
           </ul>
         </div>
+        <div class="search-history">
+          <h1 class="title">
+            <span class="text">搜索历史</span>
+            <span class="clear" @click="clearSearchHistory">
+              <i class="icon-clear"></i>
+            </span>
+          </h1>
+          <search-list :searches="searchHistory" @select="selectHistory"
+                       @delete="deleteSearchHistory"></search-list>
+        </div>
       </div>
     </div>
     <div class="search-result" v-show="query" ref="searchResult">
@@ -30,8 +40,9 @@ import {getHotKey} from 'api/search'
 import {ERR_OK} from 'api/config'
 import Suggest from 'components/suggest/suggest'
 import Singer from 'common/js/singer'
-import {mapMutations, mapActions} from 'vuex'
+import {mapMutations, mapActions, mapGetters} from 'vuex'
 import {playlistMixin} from 'common/js/mixin'
+import SearchList from 'base/search-list/search-list'
 
 export default {
   data() {
@@ -43,7 +54,11 @@ export default {
   mixins: [playlistMixin],
   components: {
     SearchBox,
-    Suggest
+    Suggest,
+    SearchList
+  },
+  computed: {
+    ...mapGetters(['searchHistory'])
   },
   created() {
     this._getHotKey()
@@ -52,21 +67,28 @@ export default {
     ...mapMutations({
       setSinger: 'SET_SINGER'
     }),
-    ...mapActions(['insertSong']),
+    ...mapActions(['insertSong', 'insertSearchHistory', 'deleteSearchHistory',
+      'clearSearchHistory']),
     handlePlaylist() {
       this.setStyle(this.$refs.searchResult, this.$refs.suggest)
+    },
+    selectHistory(query) {
+      this.query = query
+      this.selectHotKey(query)
     },
     beforeScroll() {
       this.$refs.searchBox.blur()
     },
     selectSong(item) {
       this.insertSong(item)
+      this.insertSearchHistory(this.query)
     },
     selectSinger(item) {
       this.$router.push({
         path: `/search/${item.singermid}`
       })
       this.setSinger(new Singer(item.singermid, item.singername))
+      this.insertSearchHistory(this.query)
     },
     onQuery(query) {
       this.query = query

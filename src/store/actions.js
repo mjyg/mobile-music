@@ -4,6 +4,7 @@
 import * as types from './mutation-types'
 import {playMode} from 'common/js/config'
 import {shuffle} from 'common/js/util'
+import {saveSearch, deleteSearch, clearSearch} from 'common/js/cache'
 
 export const selectPlay = function({commit, state}, {list, index}) {
   commit(types.SET_FULL_SCREEN, true)
@@ -31,9 +32,39 @@ export const insertSong = function({commit, state}, song) {
   const playlist = state.playlist.slice()
   let currentIndex = state.currentIndex
   const sequenceList = state.sequenceList.slice()
+  const currentSong = playlist[currentIndex]
 
   // 处理playlist
-  const currentSong = playlist[currentIndex]
+  currentIndex = handlePlaylist(playlist, song, currentIndex)
+
+  // 处理sequenceList
+  handlePlaylist(sequenceList, song, findIndex(sequenceList, currentSong))
+
+  commit(types.SET_FULL_SCREEN, true)
+  commit(types.SET_PLAYING_STATE, true)
+  commit(types.SET_SEQUENCE_LIST, sequenceList)
+  commit(types.SET_PLAYLIST, playlist)
+  commit(types.SET_CURRENT_INDEX, currentIndex)
+}
+
+export const insertSearchHistory = function({commit}, query) {
+  commit(types.SET_SEARCH_HISTORY, saveSearch(query))
+}
+export const deleteSearchHistory = function({commit}, query) {
+  commit(types.SET_SEARCH_HISTORY, deleteSearch(query))
+}
+
+export const clearSearchHistory = function({commit}) {
+  commit(types.SET_SEARCH_HISTORY, clearSearch())
+}
+
+function findIndex(list, song) {
+  return list.findIndex((item) => {
+    return item.id === song.id
+  })
+}
+
+function handlePlaylist(playlist, song, currentIndex) {
   // 查找是否含有待插入的歌曲
   const findIndex1 = findIndex(playlist, song)
   // 插入歌曲
@@ -48,28 +79,5 @@ export const insertSong = function({commit, state}, song) {
       playlist.splice(findIndex1 + 1, 1)
     }
   }
-
-  // 处理sequenceList
-  let currentIndex2 = findIndex(sequenceList, currentSong)
-  let findIndex2 = findIndex(sequenceList, song)
-  currentIndex2++
-  sequenceList.splice(currentIndex2, 0, song)
-  if (findIndex2 > -1) {
-    if (findIndex2 < currentIndex2) {
-      sequenceList.splice(findIndex2, 1)
-    } else {
-      sequenceList.splice(findIndex2 + 1, 1)
-    }
-  }
-  commit(types.SET_FULL_SCREEN, true)
-  commit(types.SET_PLAYING_STATE, true)
-  commit(types.SET_SEQUENCE_LIST, sequenceList)
-  commit(types.SET_PLAYLIST, playlist)
-  commit(types.SET_CURRENT_INDEX, currentIndex)
-}
-
-function findIndex(list, song) {
-  return list.findIndex((item) => {
-    return item.id === song.id
-  })
+  return currentIndex
 }
