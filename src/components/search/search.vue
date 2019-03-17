@@ -17,7 +17,7 @@
         <div class="search-history">
           <h1 class="title">
             <span class="text">搜索历史</span>
-            <span class="clear" @click="clearSearchHistory">
+            <span class="clear" @click="clear">
               <i class="icon-clear"></i>
             </span>
           </h1>
@@ -30,6 +30,8 @@
       <suggest :query="query" @selectSinger="selectSinger" ref="suggest"
                @selectSong="selectSong" @beforeScroll="beforeScroll"></suggest>
     </div>
+    <confirm ref="confirm" text="是否清空搜索历史？" @cancel="cancel" @confirm="confirm">
+    </confirm>
     <router-view></router-view>
   </div>
 </template>
@@ -43,6 +45,7 @@ import Singer from 'common/js/singer'
 import {mapMutations, mapActions, mapGetters} from 'vuex'
 import {playlistMixin} from 'common/js/mixin'
 import SearchList from 'base/search-list/search-list'
+import Confirm from 'base/confirm/confirm'
 
 export default {
   data() {
@@ -55,7 +58,8 @@ export default {
   components: {
     SearchBox,
     Suggest,
-    SearchList
+    SearchList,
+    Confirm
   },
   computed: {
     ...mapGetters(['searchHistory'])
@@ -70,6 +74,16 @@ export default {
     }),
     ...mapActions(['insertSong', 'insertSearchHistory', 'deleteSearchHistory',
       'clearSearchHistory']),
+    confirm() {
+      this.clearSearchHistory()
+      this.$refs.confirm.hide()
+    },
+    cancel() {
+      this.$refs.confirm.hide()
+    },
+    clear() {
+      this.$refs.confirm.show()
+    },
     handlePlaylist() {
       this.setStyle(this.$refs.searchResult, this.$refs.suggest)
     },
