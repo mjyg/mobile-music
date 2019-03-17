@@ -86,7 +86,7 @@
             <i @click.stop="clickPlay" :class="miniPlayIcon" class="icon-mini"></i>
           </progress-circle>
         </div>
-        <div class="control" @click="showPlaylist">
+        <div class="control" @click.stop="showPlaylist">
           <i class="icon-playlist"></i>
         </div>
       </div>
@@ -135,10 +135,10 @@ export default {
     ...mapGetters(['fullScreen', 'playlist', 'currentSong', 'playing', 'currentIndex',
       'mode', 'sequenceList']),
     playIcon() {
-      return this.playing ? 'icon-play' : 'icon-pause'
+      return this.playing ? 'icon-pause' : 'icon-play'
     },
     miniPlayIcon() {
-      return this.playing ? 'icon-play-mini' : 'icon-pause-mini'
+      return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
     },
     cdClass() {
       return this.playing ? 'play' : 'play pause'
