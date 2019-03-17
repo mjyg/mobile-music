@@ -9,17 +9,21 @@
             <span class="clear"><i class="icon-clear"></i></span>
           </h1>
         </div>
-        <transition-group name="list" tag="ul">
-          <li class="item" key="key">
-            <i class="current"></i>
-            <span class="text"></span>
-            <span class="like">
+        <scroll class="list-content" :data="sequenceList" ref="scroll">
+          <ul>
+            <li class="item" :key="item.id" v-for="(item, index) of sequenceList"
+                @click="setCurrentSong(item, index)">
+              <i class="current" :class="getCurrentCls(item)"></i>
+              <span class="text">{{item.name}}</span>
+              <span class="like">
+              <i class="icon-not-favorite"></i>
             </span>
-            <span class="delete">
-              <i class="icon-delete"></i>
-            </span>
-          </li>
-        </transition-group>
+              <span class="delete">
+            <i class="icon-delete"></i>
+          </span>
+            </li>
+          </ul>
+        </scroll>
         <div class="list-operate">
           <div class="add">
             <i class="icon-add"></i>
@@ -35,15 +39,42 @@
 </template>
 
 <script>
+import {mapGetters, mapMutations} from 'vuex'
+import Scroll from 'base/scroll/scroll'
+import {playMode} from 'common/js/config'
+
 export default {
   data() {
     return {
       showFlag: false
     }
   },
+  computed: {
+    ...mapGetters(['sequenceList', 'currentSong', 'mode', 'playlist'])
+  },
+  components: {
+    Scroll
+  },
   methods: {
+    ...mapMutations({
+      setCurrentIndex: 'SET_CURRENT_INDEX'
+    }),
+    setCurrentSong(song, index) {
+      if (this.mode === playMode.random) {
+        index = this.playlist.findIndex((item) => {
+          return item.id === song.id
+        })
+      }
+      this.setCurrentIndex(index)
+    },
+    getCurrentCls(song) {
+      return song.id === this.currentSong.id ? 'icon-play' : ''
+    },
     show() {
       this.showFlag = true
+      setTimeout(() => {
+        this.$refs.scroll.refresh()
+      }, 20)
     },
     hide() {
       this.showFlag = false
