@@ -86,13 +86,15 @@
             <i @click.stop="clickPlay" :class="miniPlayIcon" class="icon-mini"></i>
           </progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click="showPlaylist">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <playlist ref="playlist"></playlist>
     <audio :src="currentSong.url" ref="audio" @canplay="readyPlay" @error="error"
-           @timeupdate="updateTime" @ended="end"></audio>
+           @timeupdate="updateTime" @ended="end">
+    </audio>
   </div>
 </template>
 
@@ -107,6 +109,7 @@ import {playMode} from 'common/js/config'
 import {shuffle} from 'common/js/util'
 import LyricParse from 'lyric-parser'
 import Scroll from 'base/scroll/scroll'
+import Playlist from 'components/playlist/playlist'
 
 const transform = prefixStyle('transform')
 const transitionDuration = prefixStyle('transitionDuration')
@@ -125,11 +128,12 @@ export default {
   components: {
     ProgressBar,
     ProgressCircle,
-    Scroll
+    Scroll,
+    Playlist
   },
   computed: {
     ...mapGetters(['fullScreen', 'playlist', 'currentSong', 'playing', 'currentIndex',
-      'playlist', 'mode', 'sequenceList']),
+      'mode', 'sequenceList']),
     playIcon() {
       return this.playing ? 'icon-play' : 'icon-pause'
     },
@@ -184,6 +188,9 @@ export default {
       setMode: types.SET_PLAY_MODE,
       setPlaylist: types.SET_PLAYLIST
     }),
+    showPlaylist() {
+      this.$refs.playlist.show()
+    },
     touchStart(e) {
       this.touch.init = true
       const touch = e.touches[0]
