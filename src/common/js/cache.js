@@ -25,6 +25,9 @@ function delestHistory(word, list, compareFunc) {
 
 export function saveSearch(word, maxLen = 10) {
   const history = storage.get(SEARCH_KEY, [])
+  if (!word) {
+    return history
+  }
   insertArray(word, history, (item) => {
     return item === word
   }, maxLen)
@@ -37,6 +40,7 @@ export function deleteSearch(word) {
   delestHistory(word, history, (item) => {
     return item === word
   })
+  storage.set(SEARCH_KEY, history)
   return history
 }
 
