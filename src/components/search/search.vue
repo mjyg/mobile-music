@@ -3,7 +3,7 @@
     <div class="search-box-wrapper">
       <search-box ref="searchBox" @query="onQuery"></search-box>
     </div>
-    <div class="shortcut-wrapper" v-show="!query">
+    <div class="shortcut-wrapper" v-show="!query" ref="shortcutWrapper">
       <scroll class="shortcut" :data="shortcut" ref="scroll">
         <div>
           <div>
@@ -105,6 +105,7 @@ export default {
     },
     handlePlaylist() {
       this.setStyle(this.$refs.searchResult, this.$refs.suggest)
+      this.setStyle(this.$refs.shortcutWrapper, this.$refs.scroll)
     },
     selectHistory(query) {
       this.query = query
