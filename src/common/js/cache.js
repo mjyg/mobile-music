@@ -23,7 +23,7 @@ function delestHistory(word, list, compareFunc) {
   }
 }
 
-export function saveSearch(word, maxLen = 10) {
+export function saveSearch(word, maxLen = 20) {
   const history = storage.get(SEARCH_KEY, [])
   if (!word) {
     return history
