@@ -5,16 +5,18 @@
         <div class="list-header">
           <h1 class="title">
             <i class="icon"></i>
-            <span class="text"></span>
-            <span class="clear"><i class="icon-clear"></i></span>
+            <span class="text">播放列表</span>
+            <span class="clear" @click="clearPlaylist">
+              <i class="icon-clear"></i>
+            </span>
           </h1>
         </div>
         <scroll class="list-content" :data="sequenceList" ref="scroll">
-          <ul>
+          <transition-group tag="ul" name="list">
             <li class="item" :key="item.id" v-for="(item, index) of sequenceList"
                 @click="selectItem(item, index)" ref="list">
               <i class="current" :class="getCurrentCls(item)"></i>
-              <span class="text">{{item.name}}</span>
+              <span class="text" v-html="item.name">}</span>
               <span class="like">
               <i class="icon-not-favorite"></i>
               </span>
@@ -22,18 +24,19 @@
                 <i class="icon-delete"></i>
               </span>
             </li>
-          </ul>
+          </transition-group>
         </scroll>
         <div class="list-operate">
           <div class="add">
             <i class="icon-add"></i>
-            <span class="text">"添加歌曲到队列"</span>
+            <span class="text">添加歌曲到队列</span>
           </div>
         </div>
         <div class="list-close" @click="hide">
           <span>关闭</span>
         </div>
       </div>
+      <confirm text="确认清空播放列表？" @confirm="confirm" ref="confirm"></confirm>
     </div>
   </transition>
 </template>
@@ -42,6 +45,7 @@
 import {mapGetters, mapMutations, mapActions} from 'vuex'
 import Scroll from 'base/scroll/scroll'
 import {playMode} from 'common/js/config'
+import Confirm from 'base/confirm/confirm'
 
 export default {
   data() {
@@ -50,7 +54,8 @@ export default {
     }
   },
   components: {
-    Scroll
+    Scroll,
+    Confirm
   },
   computed: {
     ...mapGetters(['sequenceList', 'currentSong', 'mode', 'playlist'])
@@ -68,11 +73,19 @@ export default {
       setCurrentIndex: 'SET_CURRENT_INDEX',
       setPlayingState: 'SET_PLAYING_STATE'
     }),
-    ...mapActions(['deleteSong']),
+    ...mapActions(['deleteSong', 'clearSong']),
+    clearPlaylist() {
+      this.$refs.confirm.show()
+    },
+    confirm() {
+      this.clearSong()
+      this.showFlag = false
+    },
     deleteItem(song) {
       this.deleteSong(song)
       if (!this.playlist.length) {
         this.hide()
+        this.clearSong()
       }
     },
     selectItem(song, index) {
