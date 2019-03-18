@@ -4,8 +4,8 @@
       <div class="list-wrapper" @click.stop> <!--阻止内部点击冒泡-->
         <div class="list-header">
           <h1 class="title">
-            <i class="icon"></i>
-            <span class="text">播放列表</span>
+            <i class="icon" :class="iconMode" @click="changeMode"></i>
+            <span class="text">{{playModeText}}</span>
             <span class="clear" @click="clearPlaylist">
               <i class="icon-clear"></i>
             </span>
@@ -46,6 +46,7 @@ import {mapGetters, mapMutations, mapActions} from 'vuex'
 import Scroll from 'base/scroll/scroll'
 import {playMode} from 'common/js/config'
 import Confirm from 'base/confirm/confirm'
+import {playModeMixin} from 'common/js/mixin'
 
 export default {
   data() {
@@ -53,12 +54,17 @@ export default {
       showFlag: false
     }
   },
+  mixins: [playModeMixin],
   components: {
     Scroll,
     Confirm
   },
   computed: {
-    ...mapGetters(['sequenceList', 'currentSong', 'mode', 'playlist'])
+    ...mapGetters(['sequenceList', 'currentSong', 'mode', 'playlist']),
+    playModeText() {
+      return this.mode === playMode.random ? '随机播放' : this.mode === playMode.loop
+        ? '单曲循环' : '顺序播放'
+    }
   },
   watch: {
     currentSong(newVal, oldVal) {

@@ -106,10 +106,10 @@ import {prefixStyle} from 'common/js/dom'
 import ProgressBar from 'base/progress-bar/progress-bar'
 import ProgressCircle from 'base/progress-circle/progress-circle'
 import {playMode} from 'common/js/config'
-import {shuffle} from 'common/js/util'
 import LyricParse from 'lyric-parser'
 import Scroll from 'base/scroll/scroll'
 import Playlist from 'components/playlist/playlist'
+import {playModeMixin} from 'common/js/mixin'
 
 const transform = prefixStyle('transform')
 const transitionDuration = prefixStyle('transitionDuration')
@@ -125,6 +125,7 @@ export default {
       currentLyricTxt: '未获取到歌词'
     }
   },
+  mixins: [playModeMixin],
   components: {
     ProgressBar,
     ProgressCircle,
@@ -133,7 +134,7 @@ export default {
   },
   computed: {
     ...mapGetters(['fullScreen', 'playlist', 'currentSong', 'playing', 'currentIndex',
-      'mode', 'sequenceList']),
+      'mode']),
     playIcon() {
       return this.playing ? 'icon-pause' : 'icon-play'
     },
@@ -148,10 +149,6 @@ export default {
     },
     percent() {
       return this.currentTime / this.currentSong.duration
-    },
-    iconMode() {
-      return this.mode === playMode.sequence ? 'icon-sequence'
-        : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
     }
   },
   watch: {
@@ -184,9 +181,7 @@ export default {
     ...mapMutations({
       setFullScreen: types.SET_FULL_SCREEN,
       setPlayingState: types.SET_PLAYING_STATE,
-      setCurrentIndex: types.SET_CURRENT_INDEX,
-      setMode: types.SET_PLAY_MODE,
-      setPlaylist: types.SET_PLAYLIST
+      setCurrentIndex: types.SET_CURRENT_INDEX
     }),
     showPlaylist() {
       this.$refs.playlist.show()
@@ -258,25 +253,6 @@ export default {
       if (this.currentLyric) {
         this.currentLyric.seek(0)
       }
-    },
-    changeMode() {
-      const mode = (this.mode + 1) % 3
-      this.setMode(mode)
-      let list = []
-      if (mode === playMode.random) {
-        list = shuffle(this.sequenceList)
-      } else {
-        list = this.sequenceList
-      }
-      this._resetCurrentIndex(list)
-      this.setPlaylist(list)
-    },
-    _resetCurrentIndex(list) {
-      const self = this
-      const index = list.findIndex((item) => {
-        return item.id === self.currentSong.id
-      })
-      this.setCurrentIndex(index)
     },
     changeProgress(percent) {
       const time = percent * this.currentSong.duration
