@@ -35,6 +35,12 @@
                  @beforeScroll="beforeScroll" :showSinger="false">
         </suggest>
       </div>
+      <top-tip ref="topTip">
+        <div class="tip-title">
+          <i class="icon-ok"></i>
+          <span class="text">1首歌曲已经添加到播放列表</span>
+        </div>
+      </top-tip>
     </div>
   </transition>
 </template>
@@ -49,6 +55,7 @@ import Scroll from 'base/scroll/scroll'
 import {mapGetters, mapActions} from 'vuex'
 import Song from 'common/js/song'
 import SearchList from 'base/search-list/search-list'
+import TopTip from 'base/top-tip/top-tip'
 
 export default {
   data() {
@@ -70,7 +77,8 @@ export default {
     Switches,
     SongList,
     Scroll,
-    SearchList
+    SearchList,
+    TopTip
   },
   computed: {
     ...mapGetters(['playHistory'])
@@ -97,6 +105,10 @@ export default {
       this.insertSong(new Song(song))
       this.insertPlayHistory(song)
       this.insertSearchHistory(this.query)
+      this.showTopTip()
+    },
+    showTopTip() {
+      this.$refs.topTip.show()
     }
   }
 }

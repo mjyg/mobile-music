@@ -163,7 +163,8 @@ export default {
         this.currentLyricLine = 0
       }
       this.currentLyricTxt = ''
-      setTimeout(() => {
+      clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
         this.$refs.audio.play()
         this.currentLyric = this._getLyric()
       }, 1000) // 保证手机从后台切到前台重新播放歌曲
