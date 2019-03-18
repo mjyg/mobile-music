@@ -4,7 +4,7 @@
       <search-box ref="searchBox" @query="onQuery"></search-box>
     </div>
     <div class="shortcut-wrapper" v-show="!query" ref="shortcutWrapper">
-      <scroll class="shortcut" :data="shortcut" ref="scroll">
+      <scroll class="shortcut" :data="shortcut" ref="scroll" :refreshDelay="refreshDelay">
         <div>
           <div>
             <div class="hot-key">
@@ -56,8 +56,7 @@ import Scroll from 'base/scroll/scroll'
 export default {
   data() {
     return {
-      hotKey: [],
-      query: ''
+      hotKey: []
     }
   },
   mixins: [playlistMixin, searchMixin],

@@ -64,6 +64,12 @@ export const playModeMixin = {
 }
 
 export const searchMixin = {
+  data() {
+    return {
+      query: '',
+      refreshDelay: 100
+    }
+  },
   computed: {
     ...mapGetters(['searchHistory'])
   },

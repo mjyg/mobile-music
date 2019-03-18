@@ -21,7 +21,7 @@
             </div>
           </scroll>
           <scroll :data="searchHistory" v-show="switchIndex === 1" class="list-scroll"
-                  ref="searchHistory">
+                  ref="searchHistory" :refreshDelay="refreshDelay">
             <div class="list-inner">
               <search-list :searches="searchHistory" @select="selectHistory"
                            @delete="deleteSearchHistory">
@@ -61,7 +61,6 @@ export default {
   data() {
     return {
       showFlag: false,
-      query: '',
       switches: [{
         name: '最近播放'
       }, {

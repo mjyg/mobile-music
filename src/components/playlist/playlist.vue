@@ -11,7 +11,8 @@
             </span>
           </h1>
         </div>
-        <scroll class="list-content" :data="sequenceList" ref="scroll">
+        <scroll class="list-content" :data="sequenceList" ref="scroll"
+                :refreshDelay="refreshDelay">
           <transition-group tag="ul" name="list">
             <li class="item" :key="item.id" v-for="(item, index) of sequenceList"
                 @click="selectItem(item, index)" ref="list">
@@ -53,7 +54,8 @@ import AddSong from 'components/add-song/add-song'
 export default {
   data() {
     return {
-      showFlag: false
+      showFlag: false,
+      refreshDelay: 100
     }
   },
   mixins: [playModeMixin],
@@ -125,6 +127,7 @@ export default {
       const index = this.sequenceList.findIndex((item) => {
         return item.id === song.id
       })
+      console.log(index)
       this.$refs.scroll.scrollToElement(this.$refs.list[index], 300)
     }
   }

@@ -31,6 +31,10 @@ export default {
     beforeScroll: { // 是否监听第一次按下滚动
       type: Boolean,
       default: false
+    },
+    refreshDelay: {
+      type: Number,
+      default: 20
     }
   },
   mounted() {
@@ -39,10 +43,10 @@ export default {
     }, 20)
   },
   watch: {
-    data() { // 数据改变时刷新
+    data() { // 数据改变时刷新,DOM渲染好再刷新
       setTimeout(() => {
         this.refresh()
-      }, 20)
+      }, this.refreshDelay)
     }
   },
   methods: {
