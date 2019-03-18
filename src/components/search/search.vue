@@ -47,7 +47,7 @@ import {getHotKey} from 'api/search'
 import {ERR_OK} from 'api/config'
 import Suggest from 'components/suggest/suggest'
 import Singer from 'common/js/singer'
-import {mapMutations, mapActions, mapGetters} from 'vuex'
+import {mapMutations, mapActions} from 'vuex'
 import {playlistMixin, searchMixin} from 'common/js/mixin'
 import SearchList from 'base/search-list/search-list'
 import Confirm from 'base/confirm/confirm'
@@ -69,7 +69,6 @@ export default {
     Confirm
   },
   computed: {
-    ...mapGetters(['searchHistory']),
     shortcut() {
       return this.hotKey.concat(this.searchHistory)
     }
@@ -90,8 +89,7 @@ export default {
     ...mapMutations({
       setSinger: 'SET_SINGER'
     }),
-    ...mapActions(['insertSearchHistory', 'deleteSearchHistory',
-      'clearSearchHistory']),
+    ...mapActions(['insertSearchHistory', 'clearSearchHistory']),
     confirm() {
       this.clearSearchHistory()
       this.$refs.confirm.hide()
@@ -105,10 +103,6 @@ export default {
     handlePlaylist() {
       this.setStyle(this.$refs.searchResult, this.$refs.suggest)
       this.setStyle(this.$refs.shortcutWrapper, this.$refs.scroll)
-    },
-    selectHistory(query) {
-      this.query = query
-      this.selectHotKey(query)
     },
     selectSinger(item) {
       this.$router.push({

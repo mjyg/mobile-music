@@ -64,9 +64,11 @@ export const playModeMixin = {
 }
 
 export const searchMixin = {
+  computed: {
+    ...mapGetters(['searchHistory'])
+  },
   methods: {
-    ...mapActions(['insertSong', 'insertSearchHistory', 'deleteSearchHistory',
-      'clearSearchHistory']),
+    ...mapActions(['insertSong', 'insertSearchHistory', 'deleteSearchHistory']),
     onQuery(query) {
       this.query = query
     },
@@ -76,6 +78,10 @@ export const searchMixin = {
     selectSong(item) {
       this.insertSong(item)
       this.insertSearchHistory(this.query)
+    },
+    selectHistory(query) {
+      this.query = query
+      this.$refs.searchBox.setQuery(query)
     }
   }
 }

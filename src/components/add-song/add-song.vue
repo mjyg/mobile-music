@@ -10,13 +10,22 @@
       <div class="search-box-wrapper">
         <search-box ref="searchBox" @query="onQuery" placeholder="搜索歌曲"></search-box>
       </div>
-      <div class="shortcut" >
+      <div class="shortcut" v-show="!query">
         <switches :switches="switches" :currentIndex="switchIndex" @switch="switchItem">
         </switches>
         <div class="list-wrapper">
-          <scroll :data="playHistory" v-show="switchIndex === 0" class="list-scroll">
+          <scroll :data="playHistory" v-show="switchIndex === 0" class="list-scroll"
+                  ref="playHistory">
             <div class="list-inner">
               <song-list :songs="playHistory" @selectSong="selectSong"></song-list>
+            </div>
+          </scroll>
+          <scroll :data="searchHistory" v-show="switchIndex === 1" class="list-scroll"
+                  ref="searchHistory">
+            <div class="list-inner">
+              <search-list :searches="searchHistory" @select="selectHistory"
+                           @delete="deleteSearchHistory">
+              </search-list>
             </div>
           </scroll>
         </div>
@@ -39,6 +48,7 @@ import SongList from 'base/song-list/song-list'
 import Scroll from 'base/scroll/scroll'
 import {mapGetters, mapActions} from 'vuex'
 import Song from 'common/js/song'
+import SearchList from 'base/search-list/search-list'
 
 export default {
   data() {
@@ -59,18 +69,26 @@ export default {
     Suggest,
     Switches,
     SongList,
-    Scroll
+    Scroll,
+    SearchList
   },
   computed: {
     ...mapGetters(['playHistory'])
   },
   methods: {
-    ...mapActions(['insertPlayHistory', 'insertSong']),
+    ...mapActions(['insertPlayHistory', 'insertSong', 'insertSearchHistory']),
     hide() {
       this.showFlag = false
     },
     show() {
       this.showFlag = true
+      setTimeout(() => {
+        if (this.switchIndex === 0) {
+          this.$refs.playHistory.refresh()
+        } else {
+          this.$refs.searchHistory.refresh()
+        }
+      }, 20)
     },
     switchItem(index) {
       this.switchIndex = index
@@ -78,6 +96,7 @@ export default {
     selectSong(song) {
       this.insertSong(new Song(song))
       this.insertPlayHistory(song)
+      this.insertSearchHistory(this.query)
     }
   }
 }
