@@ -5,9 +5,10 @@
         <i class="icon-back"></i>
       </div>
       <div class="switches-wrapper">
-        <switches :currentIndex="switchIndex" :switches="switches" @switch="switchItem"></switches>
+        <switches :currentIndex="switchIndex" :switches="switches" @switch="switchItem">
+        </switches>
       </div>
-      <div ref="playBtn" class="play-btn">
+      <div ref="playBtn" class="play-btn" @click="random">
         <i class="icon-play"></i>
         <span class="text">随机播放全部</span>
       </div>
@@ -15,17 +16,18 @@
         <scroll :data="favoriteList" v-show="switchIndex === 0" class="list-scroll"
                 ref="favoriteList">
           <div class="list-inner">
-            <song-list :songs="favoriteList"></song-list>
+            <song-list :songs="favoriteList" @selectSong="selectSong"></song-list>
           </div>
         </scroll>
         <scroll :data="playHistory" v-show="switchIndex === 1" class="list-scroll"
                 ref="playHistory">
           <div class="list-inner">
-            <song-list :songs="playHistory"></song-list>
+            <song-list :songs="playHistory" @selectSong="selectSong"></song-list>
           </div>
         </scroll>
       </div>
-      <div class="no-result-wrapper">
+      <div class="no-result-wrapper" v-show="noResult">
+        <no-result :title="title"></no-result>
       </div>
     </div>
   </transition>
@@ -62,9 +64,29 @@ export default {
     NoResult
   },
   computed: {
-    ...mapGetters(['favoriteList', 'playHistory'])
+    ...mapGetters(['favoriteList', 'playHistory']),
+    noResult() {
+      return this.switchIndex === 0 ? !this.favoriteList.length : !this.playHistory.length
+    },
+    title() {
+      return this.switchIndex === 0 ? '暂无收藏歌曲' : '您还没有听过歌曲'
+    }
   },
   methods: {
+    ...mapActions(['insertSong', 'randomPlay']),
+    selectSong(song) {
+      this.insertSong(new Song(song))
+    },
+    random() {
+      let list = this.switchIndex === 0 ? this.favoriteList : this.playHistory
+      if (list.length === 0) {
+        return
+      }
+      list = list.map((song) => {
+        return new Song(song)
+      })
+      this.randomPlay({list})
+    },
     switchItem(index) {
       this.switchIndex = index
     },
@@ -74,6 +96,11 @@ export default {
       })
     },
     handlePlaylist() {
+      if (this.playlist.length) {
+        this.$refs.listWrapper.style.bottom = '60px'
+        this.$refs.favoriteList.refresh()
+        this.$refs.playHistory.refresh()
+      }
     }
   }
 }
