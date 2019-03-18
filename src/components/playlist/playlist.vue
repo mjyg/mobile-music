@@ -55,7 +55,7 @@ export default {
   data() {
     return {
       showFlag: false,
-      refreshDelay: 100
+      refreshDelay: 200
     }
   },
   mixins: [playModeMixin],
@@ -127,7 +127,6 @@ export default {
       const index = this.sequenceList.findIndex((item) => {
         return item.id === song.id
       })
-      console.log(index)
       this.$refs.scroll.scrollToElement(this.$refs.list[index], 300)
     }
   }
