@@ -1,6 +1,7 @@
 import storage from 'good-storage'
 
 const SEARCH_KEY = '__search__'
+const PLAY_KEY = '__play__'
 
 function insertArray(word, list, compareFunc, maxLen) {
   const findIndex = list.findIndex(compareFunc) // 灵活定义比较函数
@@ -25,9 +26,6 @@ function delestHistory(word, list, compareFunc) {
 
 export function saveSearch(word, maxLen = 20) {
   const history = storage.get(SEARCH_KEY, [])
-  if (!word) {
-    return history
-  }
   insertArray(word, history, (item) => {
     return item === word
   }, maxLen)
@@ -47,4 +45,21 @@ export function deleteSearch(word) {
 export function clearSearch() {
   storage.remove(SEARCH_KEY)
   return []
+}
+
+export function loadSearch() {
+  return storage.get(SEARCH_KEY, [])
+}
+
+export function savePlay(song, maxLen = 100) {
+  const history = storage.get(PLAY_KEY, [])
+  insertArray(song, history, (item) => {
+    return item.id === song.id
+  }, maxLen)
+  storage.set(PLAY_KEY, history)
+  return history
+}
+
+export function loadPlay() {
+  return storage.get(PLAY_KEY, [])
 }

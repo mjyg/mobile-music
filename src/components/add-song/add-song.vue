@@ -11,7 +11,15 @@
         <search-box ref="searchBox" @query="onQuery" placeholder="搜索歌曲"></search-box>
       </div>
       <div class="shortcut" >
-        <switches :switches="switches" :currentIndex="switchIndex" @switch="switchItem"></switches>
+        <switches :switches="switches" :currentIndex="switchIndex" @switch="switchItem">
+        </switches>
+        <div class="list-wrapper">
+          <scroll :data="playHistory" v-show="switchIndex === 0" class="list-scroll">
+            <div class="list-inner">
+              <song-list :songs="playHistory" @selectSong="selectSong"></song-list>
+            </div>
+          </scroll>
+        </div>
       </div>
       <div class="search-result" v-show="query" ref="searchResult">
         <suggest :query="query" ref="suggest" @selectSong="selectSong"
@@ -27,6 +35,10 @@ import SearchBox from 'base/search-box/search-box'
 import {searchMixin} from 'common/js/mixin'
 import Suggest from 'components/suggest/suggest'
 import Switches from 'base/switches/switches'
+import SongList from 'base/song-list/song-list'
+import Scroll from 'base/scroll/scroll'
+import {mapGetters, mapActions} from 'vuex'
+import Song from 'common/js/song'
 
 export default {
   data() {
@@ -45,9 +57,15 @@ export default {
   components: {
     SearchBox,
     Suggest,
-    Switches
+    Switches,
+    SongList,
+    Scroll
+  },
+  computed: {
+    ...mapGetters(['playHistory'])
   },
   methods: {
+    ...mapActions(['insertPlayHistory', 'insertSong']),
     hide() {
       this.showFlag = false
     },
@@ -56,6 +74,10 @@ export default {
     },
     switchItem(index) {
       this.switchIndex = index
+    },
+    selectSong(song) {
+      this.insertSong(new Song(song))
+      this.insertPlayHistory(song)
     }
   }
 }

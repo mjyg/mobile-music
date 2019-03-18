@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import {mapGetters, mapMutations} from 'vuex'
+import {mapGetters, mapMutations, mapActions} from 'vuex'
 import * as types from 'store/mutation-types'
 import animations from 'create-keyframe-animation'
 import {prefixStyle} from 'common/js/dom'
@@ -157,13 +157,14 @@ export default {
         return
       }
       if (this.currentLyric) {
-        this.currentLyric.seek(0)
         this.currentLyric.stop()
+        this.currentTime = 0
+        this.currentLyric = null
+        this.currentLyricLine = 0
       }
       this.currentLyricTxt = ''
-      const self = this
       setTimeout(() => {
-        self.$refs.audio.play()
+        this.$refs.audio.play()
         this.currentLyric = this._getLyric()
       }, 1000) // 保证手机从后台切到前台重新播放歌曲
     },
@@ -183,6 +184,7 @@ export default {
       setPlayingState: types.SET_PLAYING_STATE,
       setCurrentIndex: types.SET_CURRENT_INDEX
     }),
+    ...mapActions(['insertPlayHistory']),
     showPlaylist() {
       this.$refs.playlist.show()
     },
@@ -273,6 +275,7 @@ export default {
     },
     readyPlay() {
       this.readyPlayFlag = true // 歌曲已准备好，避免快速点击dom出错
+      this.insertPlayHistory(this.currentSong)
     },
     next() {
       this.readyPlayFlag = true

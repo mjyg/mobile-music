@@ -85,7 +85,6 @@ export default {
   },
   created() {
     this._getHotKey()
-    this.insertSearchHistory('')
   },
   methods: {
     ...mapMutations({

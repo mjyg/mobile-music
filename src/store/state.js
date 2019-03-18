@@ -1,5 +1,6 @@
 // 定义状态
 import {playMode} from 'common/js/config'
+import {loadSearch, loadPlay} from 'common/js/cache'
 
 export const state = {
   singer: {},
@@ -11,5 +12,6 @@ export const state = {
   currentIndex: -1,
   disc: {},
   rank: {},
-  searchHistory: []
+  searchHistory: loadSearch(),
+  playHistory: loadPlay()
 }
