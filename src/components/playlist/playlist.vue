@@ -20,7 +20,7 @@
               <span class="like">
               <i class="icon-not-favorite"></i>
               </span>
-              <span class="delete" @click="deleteItem(item)">
+              <span class="delete" @click.stop="deleteItem(item)">
                 <i class="icon-delete"></i>
               </span>
             </li>
@@ -91,7 +91,6 @@ export default {
       this.deleteSong(song)
       if (!this.playlist.length) {
         this.hide()
-        this.clearSong()
       }
     },
     selectItem(song, index) {
