@@ -92,7 +92,7 @@
       </div>
     </transition>
     <playlist ref="playlist"></playlist>
-    <audio :src="currentSong.url" ref="audio" @canplay="readyPlay" @error="error"
+    <audio :src="currentSong.url" ref="audio" @play="readyPlay" @error="error"
            @timeupdate="updateTime" @ended="end">
     </audio>
   </div>
@@ -142,7 +142,10 @@ export default {
       return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
     },
     cdClass() {
-      return this.playing ? 'play' : 'play pause'
+      if (!this.readyPlayFlag) {
+        this.currentLyricTxt = '正在加载...'
+      }
+      return this.readyPlayFlag ? 'play' : 'play pause'
     },
     disabledCls() {
       return this.readyPlayFlag ? '' : 'disable'
@@ -280,7 +283,7 @@ export default {
     },
     next() {
       this.readyPlayFlag = true
-      if (this.playlist.length === 1) { // 歌曲列表只有一首歌时，currentIndex不会改变，用lopp方法播放
+      if (this.playlist.length === 1) { // 歌曲列表只有一首歌时，currentIndex不会改变，用loop方法播放
         this.loop()
       } else {
         let index = this.currentIndex + 1
@@ -389,6 +392,9 @@ export default {
     },
     _getLyric() {
       this.currentSong.getLyric().then((lyric) => {
+        if (this.currentSong.lyric !== lyric) {
+          return
+        }
         this.currentLyric = new LyricParse(lyric, this._handleLyric)
         if (this.playing && this.readyPlayFlag) {
           this.currentLyric.play()
