@@ -1,6 +1,6 @@
 // 混入对象：当多个组件需要写相同逻辑时，可以把相同逻辑抽象出来放入mixin中,再在组件中插入mixin
 
-import {mapGetters, mapMutations} from 'vuex'
+import {mapGetters, mapMutations, mapActions} from 'vuex'
 import {playMode} from 'common/js/config'
 import {shuffle} from 'common/js/util'
 import * as types from 'store/mutation-types'
@@ -59,6 +59,23 @@ export const playModeMixin = {
         return item.id === self.currentSong.id
       })
       this.setCurrentIndex(index)
+    }
+  }
+}
+
+export const searchMixin = {
+  methods: {
+    ...mapActions(['insertSong', 'insertSearchHistory', 'deleteSearchHistory',
+      'clearSearchHistory']),
+    onQuery(query) {
+      this.query = query
+    },
+    beforeScroll() {
+      this.$refs.searchBox.blur()
+    },
+    selectSong(item) {
+      this.insertSong(item)
+      this.insertSearchHistory(this.query)
     }
   }
 }

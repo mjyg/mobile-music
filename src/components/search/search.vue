@@ -48,7 +48,7 @@ import {ERR_OK} from 'api/config'
 import Suggest from 'components/suggest/suggest'
 import Singer from 'common/js/singer'
 import {mapMutations, mapActions, mapGetters} from 'vuex'
-import {playlistMixin} from 'common/js/mixin'
+import {playlistMixin, searchMixin} from 'common/js/mixin'
 import SearchList from 'base/search-list/search-list'
 import Confirm from 'base/confirm/confirm'
 import Scroll from 'base/scroll/scroll'
@@ -60,7 +60,7 @@ export default {
       query: ''
     }
   },
-  mixins: [playlistMixin],
+  mixins: [playlistMixin, searchMixin],
   components: {
     Scroll,
     SearchBox,
@@ -91,7 +91,7 @@ export default {
     ...mapMutations({
       setSinger: 'SET_SINGER'
     }),
-    ...mapActions(['insertSong', 'insertSearchHistory', 'deleteSearchHistory',
+    ...mapActions(['insertSearchHistory', 'deleteSearchHistory',
       'clearSearchHistory']),
     confirm() {
       this.clearSearchHistory()
@@ -111,22 +111,12 @@ export default {
       this.query = query
       this.selectHotKey(query)
     },
-    beforeScroll() {
-      this.$refs.searchBox.blur()
-    },
-    selectSong(item) {
-      this.insertSong(item)
-      this.insertSearchHistory(this.query)
-    },
     selectSinger(item) {
       this.$router.push({
         path: `/search/${item.singermid}`
       })
       this.setSinger(new Singer(item.singermid, item.singername))
       this.insertSearchHistory(this.query)
-    },
-    onQuery(query) {
-      this.query = query
     },
     selectHotKey(key) {
       this.$refs.searchBox.setQuery(key)

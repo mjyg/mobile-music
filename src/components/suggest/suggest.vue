@@ -46,6 +46,10 @@ export default {
     query: {
       type: String,
       default: ''
+    },
+    showSinger: {
+      type: Boolean,
+      default: true
     }
   },
   watch: {
@@ -92,7 +96,7 @@ export default {
       this._getSuggest()
     },
     _getSuggest() {
-      getSuggest(this.query, this.page, perpage).then((res) => {
+      getSuggest(this.query, this.page, perpage, this.showSinger).then((res) => {
         if (res.code === ERR_OK) {
           this._handleSuggestData(res.data)
           this._checkHasMore(res.data.song)

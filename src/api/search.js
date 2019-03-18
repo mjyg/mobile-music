@@ -14,7 +14,7 @@ export function getHotKey() {
     return Promise.resolve(res.data)
   })
 }
-export function getSuggest(query, page, perpage = 20, zhida = 1) {
+export function getSuggest(query, page, perpage = 20, showSinger = true) {
   const url = '/api/getSuggest'
 
   const data = Object.assign({}, commonParams, {
@@ -22,8 +22,8 @@ export function getSuggest(query, page, perpage = 20, zhida = 1) {
     p: page,
     perpage,
     n: perpage,
-    catZhida: zhida,
-    zhidaqu: zhida,
+    catZhida: showSinger ? 1 : 0,
+    zhidaqu: showSinger ? 1 : 0,
     t: 0,
     flag: 1,
     ie: 'utf-8',
