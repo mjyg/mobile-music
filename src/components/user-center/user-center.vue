@@ -1,7 +1,7 @@
 <template>
   <transition name="slide">
     <div class="user-center">
-      <div class="back">
+      <div class="back" @click="back">
         <i class="icon-back"></i>
       </div>
       <div class="switches-wrapper">
@@ -12,6 +12,18 @@
         <span class="text">随机播放全部</span>
       </div>
       <div class="list-wrapper" ref="listWrapper">
+        <scroll :data="favoriteList" v-show="switchIndex === 0" class="list-scroll"
+                ref="favoriteList">
+          <div class="list-inner">
+            <song-list :songs="favoriteList"></song-list>
+          </div>
+        </scroll>
+        <scroll :data="playHistory" v-show="switchIndex === 1" class="list-scroll"
+                ref="playHistory">
+          <div class="list-inner">
+            <song-list :songs="playHistory"></song-list>
+          </div>
+        </scroll>
       </div>
       <div class="no-result-wrapper">
       </div>
@@ -26,7 +38,7 @@ import SongList from 'base/song-list/song-list'
 import NoResult from 'base/no-result/no-result'
 import Song from 'common/js/song'
 import {mapGetters, mapActions} from 'vuex'
-import {playlistMixin} from 'common/js/mixin'
+import {playlistMixin, playerMixin} from 'common/js/mixin'
 
 export default {
   data() {
@@ -42,7 +54,7 @@ export default {
       ]
     }
   },
-  mixins: [playlistMixin],
+  mixins: [playlistMixin, playerMixin],
   components: {
     Switches,
     Scroll,
@@ -50,10 +62,18 @@ export default {
     NoResult
   },
   computed: {
+    ...mapGetters(['favoriteList', 'playHistory'])
   },
   methods: {
     switchItem(index) {
       this.switchIndex = index
+    },
+    back() {
+      this.$router.push({
+        path: '/recommend'
+      })
+    },
+    handlePlaylist() {
     }
   }
 }

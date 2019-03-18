@@ -2,6 +2,7 @@ import storage from 'good-storage'
 
 const SEARCH_KEY = '__search__'
 const PLAY_KEY = '__play__'
+const FAVORITE_KEY = '__favorite__'
 
 function insertArray(word, list, compareFunc, maxLen) {
   const findIndex = list.findIndex(compareFunc) // 灵活定义比较函数
@@ -62,4 +63,31 @@ export function savePlay(song, maxLen = 100) {
 
 export function loadPlay() {
   return storage.get(PLAY_KEY, [])
+}
+
+export function saveFavorite(song, maxLen = 200) {
+  const history = storage.get(FAVORITE_KEY, [])
+  insertArray(song, history, (item) => {
+    return item.id === song.id
+  }, maxLen)
+  storage.set(FAVORITE_KEY, history)
+  return history
+}
+
+export function deleteFavorite(song) {
+  const history = storage.get(FAVORITE_KEY)
+  delestHistory(song, history, (item) => {
+    return item.id === song.id
+  })
+  storage.set(FAVORITE_KEY, history)
+  return history
+}
+
+export function clearFavorite() {
+  storage.remove(FAVORITE_KEY)
+  return []
+}
+
+export function loadFavorite() {
+  return storage.get(FAVORITE_KEY, [])
 }

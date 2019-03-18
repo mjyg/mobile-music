@@ -65,8 +65,8 @@
             <div class="icon i-right">
               <i class="icon-next" @click="next"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon icon-not-favorite"></i>
+            <div class="icon i-right" @click="clickFavorite(currentSong)">
+              <i class="icon" :class="getFavoriteIcon(currentSong)"></i>
             </div>
           </div>
         </div>
@@ -109,7 +109,7 @@ import {playMode} from 'common/js/config'
 import LyricParse from 'lyric-parser'
 import Scroll from 'base/scroll/scroll'
 import Playlist from 'components/playlist/playlist'
-import {playModeMixin} from 'common/js/mixin'
+import {playerMixin} from 'common/js/mixin'
 
 const transform = prefixStyle('transform')
 const transitionDuration = prefixStyle('transitionDuration')
@@ -125,7 +125,7 @@ export default {
       currentLyricTxt: '未获取到歌词'
     }
   },
-  mixins: [playModeMixin],
+  mixins: [playerMixin],
   components: {
     ProgressBar,
     ProgressCircle,

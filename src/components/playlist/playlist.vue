@@ -18,8 +18,8 @@
                 @click="selectItem(item, index)" ref="list">
               <i class="current" :class="getCurrentCls(item)"></i>
               <span class="text" v-html="item.name">}</span>
-              <span class="like">
-              <i class="icon-not-favorite"></i>
+              <span class="like"  @click.stop="clickFavorite(item)">
+                <i :class="getFavoriteIcon(item)"></i>
               </span>
               <span class="delete" @click.stop="deleteItem(item)">
                 <i class="icon-delete"></i>
@@ -48,7 +48,7 @@ import {mapGetters, mapMutations, mapActions} from 'vuex'
 import Scroll from 'base/scroll/scroll'
 import {playMode} from 'common/js/config'
 import Confirm from 'base/confirm/confirm'
-import {playModeMixin} from 'common/js/mixin'
+import {playerMixin} from 'common/js/mixin'
 import AddSong from 'components/add-song/add-song'
 
 export default {
@@ -58,7 +58,7 @@ export default {
       refreshDelay: 200
     }
   },
-  mixins: [playModeMixin],
+  mixins: [playerMixin],
   components: {
     Scroll,
     Confirm,
