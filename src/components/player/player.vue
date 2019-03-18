@@ -142,9 +142,6 @@ export default {
       return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
     },
     cdClass() {
-      if (!this.readyPlayFlag) {
-        this.currentLyricTxt = '正在加载...'
-      }
       return this.readyPlayFlag ? 'play' : 'play pause'
     },
     disabledCls() {
