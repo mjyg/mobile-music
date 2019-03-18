@@ -2,6 +2,9 @@
   <div class="m-header">
     <div class="icon"></div>
     <div class="text">Sunflower Music</div>
+    <router-link tag="div" class="mine" to="/userCenter">
+      <i class="icon-mine"></i>
+    </router-link>
   </div>
 </template>
 
