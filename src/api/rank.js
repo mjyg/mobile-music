@@ -2,7 +2,7 @@ import axios from 'axios'
 import {commonParams} from './config'
 
 export function getRank() {
-  const url = '/getRank'
+  const url = '/api/getRank'
   const params = Object.assign({}, commonParams, {
     format: 'json'
   })
@@ -13,7 +13,7 @@ export function getRank() {
   })
 }
 export function getTopList(topid) {
-  const url = '/getTopList'
+  const url = '/api/getTopList'
   const params = Object.assign({}, commonParams, {
     topid,
     needNewCode: 1,

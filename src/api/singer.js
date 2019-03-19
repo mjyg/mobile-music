@@ -11,7 +11,7 @@ export function getSingerList() {
 }
 
 export function getSingerDetail(singerId) {
-  const url = '/getSingerDetail'
+  const url = '/api/getSingerDetail'
   const data = Object.assign({}, commonParams, {
     loginUin: 0,
     hostUin: 0,

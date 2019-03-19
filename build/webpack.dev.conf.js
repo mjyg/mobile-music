@@ -106,6 +106,56 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           console.log(e)
         })
       })
+      app.get('/api/getSingerDetail', function (req, res) {
+        var url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg'
+        axios.get(url, {
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+      app.get('/api/getRecommend', function (req, res) {
+        var url = 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
+        axios.get(url, {
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+      app.get('/api/getRank', function (req, res) {
+        var url = 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg'
+        axios.get(url, {
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+      app.get('/api/getTopList', function (req, res) {
+        var url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg'
+        axios.get(url, {
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+      app.get('/api/getHotKey', function (req, res) {
+        var url = 'https://c.y.qq.com/splcloud/fcgi-bin/gethotkey.fcg'
+        axios.get(url, {
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
     },
     clientLogLevel: 'warning',
     historyApiFallback: {

@@ -2,7 +2,7 @@ import axios from 'axios'
 import {commonParams} from './config'
 
 export function getHotKey() {
-  const url = '/getHotKey'
+  const url = '/api/getHotKey'
 
   const data = Object.assign({}, commonParams, {
     platform: 'h5',

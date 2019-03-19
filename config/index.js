@@ -11,31 +11,31 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/getSingerDetail': {
-        target: 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg?',
-        changeOrigin: true, // 将主机头的起始位置更改为目标URL
-        secure: false // 验证SSL Certs
-      },
-      '/getRecommend': {
-        target: 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg?',
-        changeOrigin: true,
-        secure: false
-      },
-      '/getRank': {
-        target: 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg?',
-        changeOrigin: true,
-        secure: false
-      },
-      '/getTopList': {
-        target: 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg?',
-        changeOrigin: true,
-        secure: false
-      },
-      '/getHotKey': {
-        target: 'https://c.y.qq.com/splcloud/fcgi-bin/gethotkey.fcg?',
-        changeOrigin: true,
-        secure: false
-      }
+      // '/getSingerDetail': {
+      //   target: 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg?',
+      //   changeOrigin: true, // 将主机头的起始位置更改为目标URL
+      //   secure: false // 验证SSL Certs
+      // },
+      // '/getRecommend': {
+      //   target: 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg?',
+      //   changeOrigin: true,
+      //   secure: false
+      // },
+      // '/getRank': {
+      //   target: 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg?',
+      //   changeOrigin: true,
+      //   secure: false
+      // },
+      // '/getTopList': {
+      //   target: 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg?',
+      //   changeOrigin: true,
+      //   secure: false
+      // },
+      // '/getHotKey': {
+      //   target: 'https://c.y.qq.com/splcloud/fcgi-bin/gethotkey.fcg?',
+      //   changeOrigin: true,
+      //   secure: false
+      // }
     },
 
     // Various Dev Server settings
@@ -72,6 +72,7 @@ module.exports = {
   build: {
     // Template for index.html
     index: path.resolve(__dirname, '../dist/index.html'),
+    port: 9000,
 
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
