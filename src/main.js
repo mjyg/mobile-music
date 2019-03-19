@@ -7,6 +7,10 @@ import store from './store'
 
 import 'common/stylus/index.styl'
 
+/* eslint-disable no-unused-vars */
+import VConsole from 'vconsole'
+let vConsole = new VConsole()
+
 fastclick.attach(document.body)
 
 Vue.config.productionTip = false
